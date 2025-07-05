@@ -1,11 +1,9 @@
 package com.dorrin.harmonify.model
 
-import kotlin.time.Duration
-
 data class Track(
-  val id: String,
+  val id: Long,
   val title: String,
-  val duration: Duration,
+  val duration: Int,
   val preview: String,
   val artist: Artist,
   val album: Album

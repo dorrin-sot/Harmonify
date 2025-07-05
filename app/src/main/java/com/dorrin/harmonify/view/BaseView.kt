@@ -1,0 +1,61 @@
+package com.dorrin.harmonify.view
+
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Icon
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BaseView() {
+  val navController = rememberNavController()
+  Scaffold(
+    topBar = BottomNavigationRoute.findByRoute(
+      navController.currentDestination?.route
+        ?: BottomNavigationRoute.DefaultRoute
+    ).topBar,
+    bottomBar = {
+      BottomAppBar {
+        val currentRoute = navController.currentDestination?.route
+          ?: BottomNavigationRoute.DefaultRoute
+
+        BottomNavigationRoute.entries.forEach {
+          val selected = currentRoute == it.route
+          BottomNavigationItem(
+            selected = selected,
+            onClick = { navController.navigate(it.route) },
+            icon = {
+              Icon(
+                imageVector = it.icon,
+                contentDescription = it.title
+              )
+            },
+            enabled = !selected,
+            label = { Text(it.title) },
+          )
+        }
+      }
+    },
+    modifier = Modifier
+      .fillMaxSize()
+  ) { innerPadding ->
+    NavHost(
+      navController,
+      startDestination = BottomNavigationRoute.DefaultRoute,
+      modifier = Modifier.padding(innerPadding)
+    ) {
+      BottomNavigationRoute.entries.forEach { bnr ->
+        composable(bnr.route, content = bnr.content)
+      }
+    }
+  }
+}

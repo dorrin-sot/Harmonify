@@ -5,7 +5,7 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-interface TrackService {
+interface TrackApiService {
   @GET("/track/{id}")
   suspend fun getTrack(@Path("id") id: String): Call<Track>
 }

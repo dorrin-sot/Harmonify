@@ -2,8 +2,8 @@ plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.compose)
-  id("com.google.devtools.ksp")
-  id("com.google.dagger.hilt.android")
+  alias(libs.plugins.hilt.android)
+  kotlin("kapt")
 }
 
 android {
@@ -41,6 +41,9 @@ android {
 dependencies {
   implementation(libs.retrofit)
   implementation(libs.converter.gson)
+  implementation(libs.androidx.navigation.compose)
+  implementation(libs.androidx.material)
+  implementation(libs.androidx.runtime.livedata)
   androidTestImplementation(libs.androidx.espresso.core)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.ui.test.junit4)
@@ -49,7 +52,6 @@ dependencies {
   debugImplementation(libs.androidx.ui.tooling)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.core.ktx)
-  implementation(libs.androidx.hilt.lifecycle.viewmodel)
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.material.icons.core)
   implementation(libs.androidx.material.icons.extended)
@@ -59,8 +61,15 @@ dependencies {
   implementation(libs.androidx.ui)
   implementation(libs.androidx.ui.graphics)
   implementation(libs.androidx.ui.tooling.preview)
-  implementation(libs.hilt.android)
   implementation(platform(libs.androidx.compose.bom))
-  ksp(libs.hilt.android.compiler)
   testImplementation(libs.junit)
+
+  implementation(libs.androidx.hilt.navigation.compose)
+
+  implementation(libs.hilt.android)
+  testImplementation(libs.hilt.android.testing)
+  androidTestImplementation(libs.hilt.android.testing)
+  kapt(libs.hilt.compiler)
+  kaptTest(libs.hilt.compiler)
+  kaptAndroidTest(libs.hilt.compiler)
 }

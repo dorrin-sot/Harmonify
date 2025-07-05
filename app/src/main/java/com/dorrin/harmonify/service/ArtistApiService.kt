@@ -7,7 +7,7 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-interface ArtistService {
+interface ArtistApiService {
   @GET("/artist/{id}")
   suspend fun getArtist(@Path("id") id: String): Call<Artist>
 

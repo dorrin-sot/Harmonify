@@ -6,7 +6,7 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-interface AlbumService {
+interface AlbumApiService {
   @GET("/album/{id}")
   suspend fun getAlbum(@Path("id") id: String): Call<Album>
 

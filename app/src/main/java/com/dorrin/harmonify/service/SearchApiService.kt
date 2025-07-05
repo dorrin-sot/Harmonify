@@ -5,7 +5,7 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface SearchService {
+interface SearchApiService {
   @GET("/search")
   suspend fun search(@Query("q") q: String, @Query("order") order: String): Call<List<Track>>
 }
