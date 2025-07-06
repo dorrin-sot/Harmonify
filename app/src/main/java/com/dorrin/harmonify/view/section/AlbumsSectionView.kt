@@ -1,23 +1,22 @@
 package com.dorrin.harmonify.view.section
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Card
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.dorrin.harmonify.model.Album
+import com.dorrin.harmonify.viewmodel.PlayerViewModel
 
 @Composable
-fun AlbumsSectionView(albums: List<Album>, modifier: Modifier) {
-  SectionView(
+fun AlbumsSectionView(albums: List<Album>, modifier: Modifier = Modifier) {
+  val playerViewModel = hiltViewModel<PlayerViewModel>()
+
+  CardSectionView(
     title = "Albums",
     items = albums,
+    thumbnailGetter = { it.coverMedium },
+    titleGetter = { it.title },
+    trackGetter = { it.tracks?.data?.firstOrNull() },
+    onEnqueue = { playerViewModel.addToQueue(it.tracks?.data ?: emptyList()) },
     modifier = modifier
-  ) { artist ->
-    Card {
-      Column {
-        Text(artist.title)
-      }
-    }
-  }
+  )
 }

@@ -44,6 +44,7 @@ dependencies {
   implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.material)
   implementation(libs.androidx.runtime.livedata)
+  implementation(libs.compose)
   androidTestImplementation(libs.androidx.espresso.core)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.ui.test.junit4)

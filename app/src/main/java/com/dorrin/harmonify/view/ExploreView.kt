@@ -1,9 +1,10 @@
 package com.dorrin.harmonify.view
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Divider
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -21,23 +22,16 @@ fun ExploreView() {
   val chartAlbums = viewModel.chartAlbums.observeAsState()
   val chartTracks = viewModel.chartTracks.observeAsState()
 
-  Column(
-    modifier = Modifier
-      .fillMaxSize()
+  LazyColumn(
+    modifier = Modifier.fillMaxSize()
   ) {
-    ArtistsSectionView(
-      chartArtists.value ?: emptyList(),
-      modifier = Modifier.fillMaxHeight(.25f)
-    )
-    Divider()
-    AlbumsSectionView(
-      chartAlbums.value ?: emptyList(),
-      modifier = Modifier.fillMaxHeight(.25f)
-    )
-    Divider()
-    TracksSectionView(
-      chartTracks.value ?: emptyList(),
-      modifier = Modifier.fillMaxHeight(.5f)
-    )
+    item { AlbumsSectionView(chartAlbums.value ?: emptyList()) }
+    item { ArtistsSectionView(chartArtists.value ?: emptyList()) }
+    item {
+      TracksSectionView(
+        chartTracks.value ?: emptyList(),
+        modifier = Modifier.fillParentMaxHeight()
+      )
+    }
   }
 }
