@@ -1,15 +1,14 @@
 package com.dorrin.harmonify
 
-import com.dorrin.harmonify.service.AlbumApiService
-import com.dorrin.harmonify.service.ArtistApiService
-import com.dorrin.harmonify.service.ChartApiService
-import com.dorrin.harmonify.service.RetrofitHelper
-import com.dorrin.harmonify.service.SearchApiService
-import com.dorrin.harmonify.service.TrackApiService
+import com.dorrin.harmonify.apiservice.AlbumApiService
+import com.dorrin.harmonify.apiservice.ArtistApiService
+import com.dorrin.harmonify.apiservice.ChartApiService
+import com.dorrin.harmonify.apiservice.RetrofitHelper
+import com.dorrin.harmonify.apiservice.SearchApiService
+import com.dorrin.harmonify.apiservice.TrackApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 

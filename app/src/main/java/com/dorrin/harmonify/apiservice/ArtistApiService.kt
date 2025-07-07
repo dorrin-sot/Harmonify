@@ -1,4 +1,4 @@
-package com.dorrin.harmonify.service
+package com.dorrin.harmonify.apiservice
 
 import com.dorrin.harmonify.model.Album
 import com.dorrin.harmonify.model.Artist

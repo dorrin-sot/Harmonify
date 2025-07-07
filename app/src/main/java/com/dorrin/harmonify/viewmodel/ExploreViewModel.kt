@@ -9,7 +9,7 @@ import com.dorrin.harmonify.model.Album
 import com.dorrin.harmonify.model.Artist
 import com.dorrin.harmonify.model.Chart
 import com.dorrin.harmonify.model.Track
-import com.dorrin.harmonify.service.ChartApiService
+import com.dorrin.harmonify.apiservice.ChartApiService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

@@ -1,4 +1,4 @@
-package com.dorrin.harmonify.service
+package com.dorrin.harmonify.apiservice
 
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder

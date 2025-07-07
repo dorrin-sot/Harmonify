@@ -1,4 +1,4 @@
-package com.dorrin.harmonify.service
+package com.dorrin.harmonify.apiservice
 
 import com.dorrin.harmonify.model.Track
 import retrofit2.Call
