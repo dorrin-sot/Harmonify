@@ -8,7 +8,10 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavBackStackEntry
@@ -21,7 +24,7 @@ enum class BottomNavigationRoute(
   SETTINGS(icon = Icons.Default.Settings, content = { TODO() }),
   EXPLORE(icon = Icons.Default.Star, content = { ExploreView() }),
   LIBRARY(icon = Icons.Default.LibraryMusic, content = { TODO() }),
-  PLAYER(icon = Icons.Default.PlayArrow, content = { TODO() });
+  PLAYER(icon = Icons.Default.PlayArrow, content = { PlayerView() });
 
   internal val route: String
     get() = "/${name.lowercase()}"
@@ -38,8 +41,11 @@ enum class BottomNavigationRoute(
   val topBar: @Composable () -> Unit
     get() = {
       TopAppBar(
-        title = { title },
-        actions = topBarActions
+        title = { Text(title, color = MaterialTheme.colorScheme.onPrimary) },
+        actions = topBarActions,
+        colors = TopAppBarDefaults.topAppBarColors(
+          containerColor = MaterialTheme.colorScheme.primary
+        )
       )
     }
 

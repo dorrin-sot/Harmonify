@@ -1,10 +1,8 @@
 package com.dorrin.harmonify.view
 
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -26,7 +24,9 @@ fun ExploreView() {
     modifier = Modifier.fillMaxSize()
   ) {
     item { AlbumsSectionView(chartAlbums.value ?: emptyList()) }
+    item { HorizontalDivider() }
     item { ArtistsSectionView(chartArtists.value ?: emptyList()) }
+    item { HorizontalDivider() }
     item {
       TracksSectionView(
         chartTracks.value ?: emptyList(),

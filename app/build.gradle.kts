@@ -45,6 +45,7 @@ dependencies {
   implementation(libs.androidx.material)
   implementation(libs.androidx.runtime.livedata)
   implementation(libs.compose)
+  implementation(libs.androidx.media3.session)
   androidTestImplementation(libs.androidx.espresso.core)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.ui.test.junit4)
@@ -73,4 +74,9 @@ dependencies {
   kapt(libs.hilt.compiler)
   kaptTest(libs.hilt.compiler)
   kaptAndroidTest(libs.hilt.compiler)
+
+  implementation(libs.androidx.media3.exoplayer)
+  implementation(libs.androidx.media3.exoplayer.dash)
+  implementation(libs.androidx.media3.ui)
+  implementation(libs.androidx.media3.ui.compose)
 }
