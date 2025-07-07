@@ -3,18 +3,20 @@ package com.dorrin.harmonify.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
-import androidx.media3.session.MediaController
 import com.dorrin.harmonify.conversion.toMediaItem
 import com.dorrin.harmonify.model.Track
+import com.dorrin.harmonify.provider.MediaControllerProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
+  private val mediaControllerProvider: MediaControllerProvider
 ) : ViewModel() {
-  private var isInitialized = false
-  private var mediaController: MediaController? = null
+  val mediaController = mediaControllerProvider.getController()
 
   private lateinit var mediaListener: CustomPlayerListener
   private lateinit var playlistListener: (tracks: List<Track>) -> Unit
@@ -43,37 +45,29 @@ class PlayerViewModel @Inject constructor(
   private val _seek = MutableLiveData<Float>()
   val seek: LiveData<Float> get() = _seek
 
-  fun setMediaController(mediaController: MediaController) {
-    assert(!isInitialized) { "setMediaController can only be called once" }
-    mediaListener = CustomPlayerListener()
-    this.mediaController = mediaController.apply { addListener(mediaListener) }
-    println("PlayerViewModel::setMediaController $this ${this.mediaController}")
-    isInitialized = true
-  }
+  init { initializeController() }
+
+  private fun initializeController() =
+    viewModelScope.launch { mediaControllerProvider.awaitController() }
 
   fun isInQueue(track: Track): Boolean {
-    println("PlayerViewModel::isInQueue $this $mediaController")
     return playlist.value?.contains(track) == true
   }
 
   fun pause() {
-    println("PlayerViewModel::pause $this $mediaController")
     mediaController?.pause()
   }
 
   fun play() {
-    println("PlayerViewModel::play $this $mediaController")
     mediaController?.prepare()
     mediaController?.play()
   }
 
   fun seekTo(percent: Float) {
-    println("PlayerViewModel::seekTo $this $mediaController")
     mediaController?.seekTo((percent * (currentTrack.value?.duration ?: 0) * 1000L).toLong())
   }
 
   fun addToPlaylist(tracks: List<Track>) {
-    println("PlayerViewModel::addToPlaylist $this $mediaController")
     _playlist.postValue(listOf(*playlist.value!!.toTypedArray(), *tracks.toTypedArray()))
     mediaController?.addMediaItems(tracks.map { it.toMediaItem() })
   }
