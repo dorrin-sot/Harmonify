@@ -1,5 +1,7 @@
 package com.dorrin.harmonify.view
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material.icons.Icons
@@ -12,32 +14,26 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.dorrin.harmonify.model.Track
 import com.dorrin.harmonify.viewmodel.PlayerViewModel
 
 @Composable
-fun PlayerIconButton(
-  track: Track,
-  onEnqueue: () -> Unit
-) {
-  val playerViewModel = hiltViewModel<PlayerViewModel>()
+fun PlayerIconButton(modifier: Modifier = Modifier, track: Track? = null) {
+  val playerViewModel = hiltViewModel<PlayerViewModel>(LocalActivity.current as ComponentActivity)
 
   val modifier = Modifier
     .requiredSize(50.dp)
     .padding(5.dp)
+    .then(modifier)
 
   val isPlaying = playerViewModel.isPlaying.observeAsState()
 
-  if (playerViewModel.isInQueue(track)) {
-    if (isPlaying.value == true) {
-      PlayerPauseIconButton(modifier) { playerViewModel.pause() }
-    } else {
-      PlayerResumeIconButton(modifier) { playerViewModel.play() }
-    }
+  if (isPlaying.value == true) {
+    PlayerPauseIconButton(modifier) { playerViewModel.pause() }
   } else {
-    PlayerPlayIconButton(modifier) {
-      onEnqueue()
+    PlayerResumeIconButton(modifier) {
+      if (track != null && !playerViewModel.isInQueue(track))
+        playerViewModel.addToPlaylist(listOf(track))
       playerViewModel.play()
     }
   }
@@ -58,17 +54,7 @@ private fun PlayerResumeIconButton(modifier: Modifier = Modifier, onResume: () -
   IconButton(onClick = onResume, modifier = modifier) {
     Icon(
       Icons.Default.PlayArrow,
-      contentDescription = "Resume"
-    )
-  }
-}
-
-@Composable
-private fun PlayerPlayIconButton(modifier: Modifier = Modifier, onPlay: () -> Unit) {
-  IconButton(onClick = onPlay, modifier = modifier) {
-    Icon(
-      Icons.Default.PlayArrow,
-      contentDescription = "Play"
+      contentDescription = "Play/Resume"
     )
   }
 }

@@ -28,7 +28,6 @@ internal fun <T> CardSectionView(
   thumbnailGetter: (item: T) -> String,
   titleGetter: (item: T) -> String,
   trackGetter: (item: T) -> Track?,
-  onEnqueue: (item: T) -> Unit,
   modifier: Modifier,
 ) {
   BaseSectionView(title, modifier) {
@@ -62,10 +61,7 @@ internal fun <T> CardSectionView(
               )
 
               trackGetter(it)?.let { track ->
-                PlayerIconButton(
-                  track,
-                  onEnqueue = { onEnqueue(it) }
-                )
+                PlayerIconButton(track = track)
               }
             }
           }

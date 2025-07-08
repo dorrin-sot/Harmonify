@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -32,11 +31,10 @@ internal fun <T> GridSectionView(
   thumbnailGetter: (item: T) -> String,
   titleGetter: (item: T) -> String,
   trackGetter: (item: T) -> Track,
-  onEnqueue: (item: T) -> Unit,
   modifier: Modifier,
 ) {
   BaseSectionView(title, modifier) {
-    LazyVerticalGrid (
+    LazyVerticalGrid(
       columns = GridCells.Fixed(2),
       modifier = Modifier.fillMaxHeight(),
       userScrollEnabled = false
@@ -66,10 +64,8 @@ internal fun <T> GridSectionView(
               maxLines = 1,
               modifier = Modifier.padding(5.dp),
             )
-            PlayerIconButton(
-              trackGetter(it),
-              onEnqueue = { onEnqueue(it) },
-            )
+
+            PlayerIconButton(track = trackGetter(it))
           }
         }
       }
