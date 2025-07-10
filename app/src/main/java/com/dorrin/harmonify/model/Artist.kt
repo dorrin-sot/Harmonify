@@ -9,4 +9,7 @@ data class Artist(
   val pictureMedium: String,
   val pictureBig: String,
   val pictureXl: String,
+
+  val albums: List<Album>?,
+  val topTracks: List<Track>?,
 )

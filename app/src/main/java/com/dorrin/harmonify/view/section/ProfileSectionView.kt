@@ -31,8 +31,10 @@ internal fun <T> ProfileSectionView(
   items: List<T>,
   thumbnailGetter: (item: T) -> String,
   titleGetter: (item: T) -> String,
+  onClick: (item: T) -> Unit,
   modifier: Modifier,
 ) {
+
   BaseSectionView(title, modifier) {
     Row(
       modifier = Modifier
@@ -54,7 +56,7 @@ internal fun <T> ProfileSectionView(
               modifier = Modifier
                 .clip(CircleShape)
                 .shadow(2.dp, CircleShape)
-                .clickable(onClick = { TODO() }),
+                .clickable(onClick = { onClick(it) }),
             )
 
             Text(

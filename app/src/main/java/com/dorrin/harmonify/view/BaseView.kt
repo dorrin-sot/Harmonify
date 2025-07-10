@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
+import com.dorrin.harmonify.view.bottomsheet.ArtistBottomSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,5 +65,7 @@ fun BaseView() {
         composable(bnr.route, content = bnr.content)
       }
     }
+
+    ArtistBottomSheet()
   }
 }
