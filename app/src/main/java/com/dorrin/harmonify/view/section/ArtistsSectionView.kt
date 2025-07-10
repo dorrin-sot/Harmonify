@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import com.dorrin.harmonify.model.Artist
 
 @Composable
-fun ArtistsSectionView(artists: List<Artist>, modifier: Modifier = Modifier) {
+internal fun ArtistsSectionView(artists: List<Artist>, modifier: Modifier = Modifier) {
   ProfileSectionView(
     title = "Artists",
     items = artists,

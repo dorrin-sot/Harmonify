@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import com.dorrin.harmonify.model.Album
 
 @Composable
-fun AlbumsSectionView(albums: List<Album>, modifier: Modifier = Modifier) {
+internal fun AlbumsSectionView(albums: List<Album>, modifier: Modifier = Modifier) {
   CardSectionView(
     title = "Albums",
     items = albums,

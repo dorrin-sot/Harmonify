@@ -31,6 +31,6 @@ class ExploreViewModel @Inject constructor(
   }
 
   fun getChart() = viewModelScope.launch {
-    _chart.value = (chartApiService.getChart())
+    _chart.value = chartApiService.getChart()
   }
 }

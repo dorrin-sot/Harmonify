@@ -52,81 +52,84 @@ fun PlayerView(
       .fillMaxSize()
       .padding(20.dp)
   ) {
-    RotatingVinylView(viewModel)
+    if (track.value != null) {
+      val track = track.value!!
+      RotatingVinylView(viewModel)
 
-    Text(
-      track.value?.title ?: "",
-      style = HarmonifyTypography.titleLarge,
-      textAlign = TextAlign.Start,
-      modifier = Modifier
-        .fillMaxWidth()
-        .basicMarquee(
-          initialDelayMillis = 2000,
-          repeatDelayMillis = 1500
-        )
-        .padding(top = 25.dp)
-        .padding(horizontal = 10.dp)
-    )
+      Text(
+        track.title,
+        style = HarmonifyTypography.titleLarge,
+        textAlign = TextAlign.Start,
+        modifier = Modifier
+          .fillMaxWidth()
+          .basicMarquee(
+            initialDelayMillis = 2000,
+            repeatDelayMillis = 1500
+          )
+          .padding(top = 25.dp)
+          .padding(horizontal = 10.dp)
+      )
 
-    Text(
-      track.value?.artist?.name ?: "",
-      style = HarmonifyTypography.titleSmall,
-      textAlign = TextAlign.Start,
-      modifier = Modifier
-        .fillMaxWidth()
-        .basicMarquee()
-        .padding(bottom = 10.dp)
-        .padding(horizontal = 10.dp)
-    )
+      Text(
+        track.artist.name,
+        style = HarmonifyTypography.titleSmall,
+        textAlign = TextAlign.Start,
+        modifier = Modifier
+          .fillMaxWidth()
+          .basicMarquee()
+          .padding(bottom = 10.dp)
+          .padding(horizontal = 10.dp)
+      )
 
-    Row(
-      horizontalArrangement = Arrangement.Center,
-      verticalAlignment = Alignment.CenterVertically
-    ) {
+      Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+      ) {
 //      ShuffleIconButton()
 
-      IconButton(
-        { viewModel.skipBackward(10) },
-      ) { Icon(Icons.Default.Replay10, "Skip backward 10s") }
+        IconButton(
+          { viewModel.skipBackward(10) },
+        ) { Icon(Icons.Default.Replay10, "Skip backward 10s") }
 
-      IconButton(
-        { viewModel.skipPrevious() },
-        enabled = viewModel.canSkipPrevious
-      ) { Icon(Icons.Default.SkipPrevious, "Skip Previous") }
+        IconButton(
+          { viewModel.skipPrevious() },
+          enabled = viewModel.canSkipPrevious
+        ) { Icon(Icons.Default.SkipPrevious, "Skip Previous") }
 
-      PlayerIconButton(playerViewModel = viewModel)
+        PlayerIconButton(playerViewModel = viewModel)
 
-      IconButton(
-        { viewModel.skipNext() },
-        enabled = viewModel.canSkipNext
-      ) { Icon(Icons.Default.SkipNext, "Skip Next") }
+        IconButton(
+          { viewModel.skipNext() },
+          enabled = viewModel.canSkipNext
+        ) { Icon(Icons.Default.SkipNext, "Skip Next") }
 
-      IconButton(
-        { viewModel.skipForward(10) },
-      ) { Icon(Icons.Default.Forward10, "Skip forward 10s") }
+        IconButton(
+          { viewModel.skipForward(10) },
+        ) { Icon(Icons.Default.Forward10, "Skip forward 10s") }
 
 //      RepeatIconButton()
-    }
+      }
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
-      val total = viewModel.currentTrack.map { it?.duration }.observeAsState()
-      val seek = viewModel.seek.observeAsState()
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        val total = viewModel.currentTrack.map { it?.duration }.observeAsState()
+        val seek = viewModel.seek.observeAsState()
 
-      Text(
-        duration(seek.value?.times(total.value?.toFloat() ?: 0f)),
-        style = HarmonifyTypography.labelSmall
-      )
-      Slider(
-        value = seek.value ?: 0f,
-        onValueChange = { viewModel.seekTo(it) },
-        modifier = Modifier
-          .padding(horizontal = 10.dp)
-          .weight(1f)
-      )
-      Text(
-        duration(total.value),
-        style = HarmonifyTypography.labelMedium
-      )
+        Text(
+          duration(seek.value?.times(total.value?.toFloat() ?: 0f)),
+          style = HarmonifyTypography.labelSmall
+        )
+        Slider(
+          value = seek.value ?: 0f,
+          onValueChange = { viewModel.seekTo(it) },
+          modifier = Modifier
+            .padding(horizontal = 10.dp)
+            .weight(1f)
+        )
+        Text(
+          duration(total.value),
+          style = HarmonifyTypography.labelMedium
+        )
+      }
     }
   }
 }

@@ -1,9 +1,12 @@
 package com.dorrin.harmonify.view.section
 
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.rememberScrollState
@@ -34,6 +37,7 @@ internal fun <T> CardSectionView(
     Row(
       modifier = Modifier
         .horizontalScroll(rememberScrollState())
+        .height(intrinsicSize = IntrinsicSize.Max)
     ) {
       items.forEach {
         ElevatedCard(
@@ -42,13 +46,13 @@ internal fun <T> CardSectionView(
             .padding(horizontal = 5.dp)
         ) {
           Column(
-            verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.requiredWidth(150.dp)
           ) {
             GlideImage(
               model = thumbnailGetter(it),
               contentDescription = "Album: ${titleGetter(it)}",
               contentScale = ContentScale.FillWidth,
+              modifier = Modifier.aspectRatio(1f)
             )
 
             Row {
@@ -64,6 +68,8 @@ internal fun <T> CardSectionView(
                 PlayerIconButton(track = track)
               }
             }
+
+            Spacer(Modifier.weight(1f))
           }
         }
       }
