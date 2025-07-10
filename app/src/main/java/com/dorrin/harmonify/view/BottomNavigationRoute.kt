@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavBackStackEntry
 import com.dorrin.harmonify.extension.capitalize
+import com.dorrin.harmonify.view.player.PlayerView
 
 enum class BottomNavigationRoute(
   val icon: ImageVector,

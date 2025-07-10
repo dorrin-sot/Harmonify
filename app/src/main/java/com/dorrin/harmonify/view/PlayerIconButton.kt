@@ -18,9 +18,11 @@ import com.dorrin.harmonify.model.Track
 import com.dorrin.harmonify.viewmodel.PlayerViewModel
 
 @Composable
-fun PlayerIconButton(modifier: Modifier = Modifier, track: Track? = null) {
-  val playerViewModel = hiltViewModel<PlayerViewModel>(LocalActivity.current as ComponentActivity)
-
+fun PlayerIconButton(
+  modifier: Modifier = Modifier,
+  track: Track? = null,
+  playerViewModel: PlayerViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
+) {
   val modifier = Modifier
     .requiredSize(50.dp)
     .padding(5.dp)

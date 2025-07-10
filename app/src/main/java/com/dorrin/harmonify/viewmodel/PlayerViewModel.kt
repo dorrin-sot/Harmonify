@@ -3,14 +3,18 @@ package com.dorrin.harmonify.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import androidx.media3.session.MediaController
 import com.dorrin.harmonify.conversion.toMediaItem
+import com.dorrin.harmonify.conversion.toTrack
 import com.dorrin.harmonify.model.Track
 import com.dorrin.harmonify.provider.MediaControllerProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.max
@@ -18,9 +22,9 @@ import kotlin.math.min
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
-  private val mediaControllerProvider: MediaControllerProvider
+  val mediaControllerProvider: MediaControllerProvider
 ) : ViewModel() {
-  private var mediaController: MediaController? = null
+  var mediaController: MediaController? = null
 
   private lateinit var mediaListener: CustomPlayerListener
 
@@ -42,7 +46,8 @@ class PlayerViewModel @Inject constructor(
   private val _currentIndex = MutableLiveData<Int>()
   val currentIndex: LiveData<Int> get() = _currentIndex
 
-  val currentTrack: LiveData<Track?> get() = currentIndex.map { playlist.value?.get(it) }
+  private val _currentTrack = MutableLiveData<Track>()
+  val currentTrack: LiveData<Track?> get() = _currentTrack
 
   private val _seek = MutableLiveData<Float>()
   val seek: LiveData<Float> get() = _seek
@@ -50,8 +55,23 @@ class PlayerViewModel @Inject constructor(
   val canSkipPrevious: Boolean get() = mediaController?.hasPreviousMediaItem() == true
   val canSkipNext: Boolean get() = mediaController?.hasNextMediaItem() == true
 
+  private var progressUpdateJob: Job? = null
+
   init {
     initializeController()
+    isPlaying.observeForever { isPlaying ->
+      if (isPlaying && progressUpdateJob?.isActive != true)
+        startProgressUpdates()
+    }
+
+    currentIndex.observeForever { }
+  }
+
+  override fun onCleared() {
+    mediaController?.removeListener(mediaListener)
+    mediaController?.release()
+    progressUpdateJob?.cancel()
+    super.onCleared()
   }
 
   private fun initializeController() {
@@ -87,11 +107,6 @@ class PlayerViewModel @Inject constructor(
 
   fun addToPlaylist(tracks: List<Track>) {
     object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController") }
-    _playlist.value =
-      listOf(
-        *playlist.value?.toTypedArray() ?: emptyArray(),
-        *tracks.toTypedArray()
-      )
     mediaController?.addMediaItems(tracks.map { it.toMediaItem() })
   }
 
@@ -118,7 +133,7 @@ class PlayerViewModel @Inject constructor(
   }
 
   fun skipForward(seconds: Int) {
-    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController") }
+    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController ${playlist.value} ${currentIndex.value} ${currentTrack.value}") }
     val total = currentTrack.value!!.duration.toFloat()
     val currentPos = (seek.value ?: 0f) * total
     val newPosSec = max(min(currentPos + seconds, 0f), total)
@@ -135,36 +150,97 @@ class PlayerViewModel @Inject constructor(
     seekTo(newPosMSec)
   }
 
+  private fun startProgressUpdates() {
+    progressUpdateJob?.cancel()
+    progressUpdateJob = viewModelScope.launch {
+      while (true) {
+        delay(1000) // Update every second
+        if (isPlaying.value == true) {
+          mediaListener.updateSeekPosition()
+        }
+      }
+    }
+  }
+
   inner class CustomPlayerListener : Player.Listener {
-    override fun onEvents(player: Player, events: Player.Events) {
-      object {}.javaClass.apply {
-        println(
-          "${enclosingClass?.name}::${enclosingMethod?.name} " +
-              "${List(events.size()) { events.get(it) }}"
-        )
+    override fun onPlaybackStateChanged(playbackState: Int) {
+      object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
+      _isLoading.value = (playbackState == Player.STATE_BUFFERING)
+    }
+
+    override fun onIsLoadingChanged(isLoading: Boolean) {
+      object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
+      _isLoading.value = isLoading
+    }
+
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+      object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
+      _isPlaying.value = isPlaying
+    }
+
+    override fun onRepeatModeChanged(repeatMode: Int) {
+      object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
+      _repeatMode.value = repeatMode
+    }
+
+    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+      object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
+      _shuffleMode.value = shuffleModeEnabled
+    }
+
+    override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+      object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
+      updatePlaylist(timeline)
+      updateCurrentIndex()
+    }
+
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+      object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
+      updateCurrentIndex()
+      updateSeekPosition()
+    }
+
+    override fun onPositionDiscontinuity(
+      oldPosition: Player.PositionInfo,
+      newPosition: Player.PositionInfo,
+      reason: Int
+    ) {
+      object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
+      updateSeekPosition()
+    }
+
+    private fun updateCurrentIndex() {
+      object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
+      _currentIndex.value = mediaController?.currentMediaItemIndex
+      playlist.value
+        ?.let { playlist ->
+          playlist.ifEmpty { null } ?: return@let
+          val index = currentIndex.value
+          index ?: return@let
+          val track = playlist.getOrNull(index)
+          track ?: return@let
+          _currentTrack.value = track
+        }
+
+    }
+
+    internal fun updateSeekPosition() {
+      object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
+      val duration = mediaController?.duration ?: 0
+      if (duration > 0) {
+        _seek.value = mediaController?.currentPosition?.toFloat()?.div(duration)
       }
-      super.onEvents(player, events)
+    }
 
-      if (events.contains(Player.EVENT_IS_PLAYING_CHANGED))
-        _isPlaying.postValue(player.isPlaying)
-
-      if (events.contains(Player.EVENT_IS_LOADING_CHANGED))
-        _isLoading.postValue(player.isLoading)
-
-      if (events.contains(Player.EVENT_REPEAT_MODE_CHANGED))
-        _repeatMode.postValue(player.repeatMode)
-
-      if (events.contains(Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED))
-        _shuffleMode.postValue(player.shuffleModeEnabled)
-
-      if (
-        events.contains(Player.EVENT_MEDIA_ITEM_TRANSITION) ||
-        events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED) ||
-        events.contains(Player.EVENT_PLAY_WHEN_READY_CHANGED)
-      ) {
-        _currentIndex.postValue(player.currentMediaItemIndex)
-        _seek.postValue(player.currentPosition / player.duration.toFloat())
-      }
+    private fun updatePlaylist(timeline: Timeline) {
+      object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
+      List(timeline.windowCount) {
+        timeline.getWindow(it, Timeline.Window())
+          .mediaItem
+          .toTrack()
+      }.filterNotNull()
+        .ifEmpty { null }
+        ?.let { _playlist.value = it }
     }
   }
 }

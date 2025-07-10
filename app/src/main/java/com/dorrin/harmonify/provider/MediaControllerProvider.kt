@@ -11,7 +11,7 @@ import kotlin.coroutines.suspendCoroutine
 
 @Singleton
 class MediaControllerProvider @Inject constructor(
-  private val controllerFuture: ListenableFuture<MediaController>
+  val controllerFuture: ListenableFuture<MediaController>
 ) {
   fun getController(): MediaController? =
     if (controllerFuture.isDone) {
