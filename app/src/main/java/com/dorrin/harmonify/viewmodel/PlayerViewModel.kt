@@ -47,7 +47,10 @@ class PlayerViewModel @Inject constructor(
   val currentIndex: LiveData<Int> get() = _currentIndex
 
   private val _currentTrack = MutableLiveData<Track>()
-  val currentTrack: LiveData<Track?> get() = _currentTrack
+  val currentTrack: LiveData<Track> get() = _currentTrack
+
+  private val _currentTrackDurationMs = MutableLiveData<Long>()
+  val currentTrackDurationMs: LiveData<Long> get() = _currentTrackDurationMs
 
   private val _seek = MutableLiveData<Float>()
   val seek: LiveData<Float> get() = _seek
@@ -102,12 +105,22 @@ class PlayerViewModel @Inject constructor(
 
   fun seekTo(percent: Float) {
     object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController") }
-    mediaController?.seekTo((percent * (currentTrack.value?.duration ?: 0) * 1000L).toLong())
+    val duration = currentTrackDurationMs.value ?: 0
+    mediaController?.seekTo((percent * duration).toLong())
   }
 
   fun addToPlaylist(tracks: List<Track>) {
     object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController") }
     mediaController?.addMediaItems(tracks.map { it.toMediaItem() })
+  }
+
+  fun removeFromPlaylist(tracks: List<Track>) {
+    tracks
+      .mapNotNull { playlist.value?.indexOf(it) }
+      .mapNotNull { if (it == -1) null else it }
+      .forEach { idx ->
+        mediaController?.removeMediaItem(idx)
+      }
   }
 
   fun skipPrevious() {
@@ -134,20 +147,11 @@ class PlayerViewModel @Inject constructor(
 
   fun skipForward(seconds: Int) {
     object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController ${playlist.value} ${currentIndex.value} ${currentTrack.value}") }
-    val total = currentTrack.value!!.duration.toFloat()
-    val currentPos = (seek.value ?: 0f) * total
-    val newPosSec = max(min(currentPos + seconds, 0f), total)
-    val newPosMSec = newPosSec * 1000L
-    seekTo(newPosMSec)
-  }
 
-  fun skipBackward(seconds: Int) {
-    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController") }
-    val total = currentTrack.value!!.duration.toFloat()
+    val total = currentTrackDurationMs.value?.toFloat() ?: 0f
     val currentPos = (seek.value ?: 0f) * total
-    val newPosSec = max(min(currentPos - seconds, 0f), total)
-    val newPosMSec = newPosSec * 1000L
-    seekTo(newPosMSec)
+    val newPosMSec = min(max(currentPos + seconds * 1000, 0f), total)
+    seekTo(newPosMSec / total)
   }
 
   private fun startProgressUpdates() {
@@ -163,6 +167,14 @@ class PlayerViewModel @Inject constructor(
   }
 
   inner class CustomPlayerListener : Player.Listener {
+    override fun onEvents(player: Player, events: Player.Events) {
+      if (events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED) &&
+        player.playbackState == Player.STATE_READY
+      ) {
+        _currentTrackDurationMs.value = player.duration
+      }
+    }
+
     override fun onPlaybackStateChanged(playbackState: Int) {
       object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
       _isLoading.value = (playbackState == Player.STATE_BUFFERING)
@@ -226,7 +238,7 @@ class PlayerViewModel @Inject constructor(
 
     internal fun updateSeekPosition() {
       object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
-      val duration = mediaController?.duration ?: 0
+      val duration = currentTrackDurationMs.value ?: 0
       if (duration > 0) {
         _seek.value = mediaController?.currentPosition?.toFloat()?.div(duration)
       }

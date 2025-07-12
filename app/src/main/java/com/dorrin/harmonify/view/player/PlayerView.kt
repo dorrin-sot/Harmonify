@@ -28,7 +28,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.map
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.dorrin.harmonify.HarmonifyModule
 import com.dorrin.harmonify.provider.MediaControllerProvider
@@ -36,6 +35,7 @@ import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.PlayerIconButton
 import com.dorrin.harmonify.viewmodel.ExploreViewModel
 import com.dorrin.harmonify.viewmodel.PlayerViewModel
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -88,7 +88,7 @@ fun PlayerView(
 //      ShuffleIconButton()
 
         IconButton(
-          { viewModel.skipBackward(10) },
+          { viewModel.skipForward(-10) },
         ) { Icon(Icons.Default.Replay10, "Skip backward 10s") }
 
         IconButton(
@@ -111,7 +111,7 @@ fun PlayerView(
       }
 
       Row(verticalAlignment = Alignment.CenterVertically) {
-        val total = viewModel.currentTrack.map { it?.duration }.observeAsState()
+        val total = viewModel.currentTrackDurationMs.observeAsState()
         val seek = viewModel.seek.observeAsState()
 
         Text(
@@ -137,7 +137,7 @@ fun PlayerView(
 private fun duration(seconds: Number?): String =
   seconds
     ?.toInt()
-    ?.seconds
+    ?.milliseconds
     ?.toComponents { hours, minutes, seconds, _ ->
       "%02d:%02d:%02d".format(hours, minutes, seconds)
     }?.let { if (it.startsWith("00:")) it.substring(3) else it }
