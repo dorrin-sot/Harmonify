@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.ktx.Placeholder
 import com.dorrin.harmonify.model.Track
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.PlayerIconButton

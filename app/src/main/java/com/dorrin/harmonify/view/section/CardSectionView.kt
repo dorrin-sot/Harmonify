@@ -3,6 +3,7 @@ package com.dorrin.harmonify.view.section
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -34,6 +35,7 @@ internal fun <T> CardSectionView(
   items: List<T>,
   thumbnailGetter: (item: T) -> String,
   titleGetter: (item: T) -> String,
+  artistGetter: (item: T) -> String,
   trackGetter: (item: T) -> Track?,
   modifier: Modifier,
   playerViewModel: PlayerViewModel = hiltViewModel(LocalActivity.current as ComponentActivity),
@@ -61,13 +63,23 @@ internal fun <T> CardSectionView(
             )
 
             Row {
-              Text(
-                titleGetter(it),
-                overflow = TextOverflow.Ellipsis,
-                style = HarmonifyTypography.bodyLarge,
-                maxLines = 2,
-                modifier = Modifier.padding(5.dp)
-              )
+              Column(
+                verticalArrangement = Arrangement.spacedBy(5.dp),
+                modifier = Modifier.padding(7.dp),
+              ) {
+                Text(
+                  titleGetter(it),
+                  overflow = TextOverflow.Ellipsis,
+                  style = HarmonifyTypography.titleMedium,
+                  maxLines = 1,
+                )
+                Text(
+                  artistGetter(it),
+                  overflow = TextOverflow.Ellipsis,
+                  style = HarmonifyTypography.bodyMedium,
+                  maxLines = 1,
+                )
+              }
 
               trackGetter(it)?.let { track ->
                 PlayerIconButton(track = track, playerViewModel = playerViewModel)

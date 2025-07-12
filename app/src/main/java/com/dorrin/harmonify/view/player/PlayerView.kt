@@ -10,14 +10,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.IconButton
-import androidx.compose.material.Slider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Forward10
 import androidx.compose.material.icons.filled.Replay10
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -33,10 +33,11 @@ import com.dorrin.harmonify.HarmonifyModule
 import com.dorrin.harmonify.provider.MediaControllerProvider
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.PlayerIconButton
+import com.dorrin.harmonify.view.RepeatIconButton
+import com.dorrin.harmonify.view.ShuffleIconButton
 import com.dorrin.harmonify.viewmodel.ExploreViewModel
 import com.dorrin.harmonify.viewmodel.PlayerViewModel
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -85,7 +86,7 @@ fun PlayerView(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
       ) {
-//      ShuffleIconButton()
+        ShuffleIconButton(playerViewModel = viewModel)
 
         IconButton(
           { viewModel.skipForward(-10) },
@@ -107,7 +108,7 @@ fun PlayerView(
           { viewModel.skipForward(10) },
         ) { Icon(Icons.Default.Forward10, "Skip forward 10s") }
 
-//      RepeatIconButton()
+        RepeatIconButton(playerViewModel = viewModel)
       }
 
       Row(verticalAlignment = Alignment.CenterVertically) {

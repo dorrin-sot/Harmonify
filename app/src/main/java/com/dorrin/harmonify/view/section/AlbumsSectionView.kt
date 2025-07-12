@@ -19,6 +19,7 @@ internal fun AlbumsSectionView(
     items = albums,
     thumbnailGetter = { it.coverMedium },
     titleGetter = { it.title },
+    artistGetter = { it.artist!!.name },
     trackGetter = { it.tracks?.data?.firstOrNull() },
     modifier = modifier,
     playerViewModel = playerViewModel,
