@@ -22,18 +22,11 @@ fun ExploreView() {
   val chartAlbums = viewModel.chartAlbums.observeAsState()
   val chartTracks = viewModel.chartTracks.observeAsState()
 
-  LazyColumn(
-    modifier = Modifier.fillMaxSize()
-  ) {
+  LazyColumn {
     item { AlbumsSectionView(albums = chartAlbums.value ?: emptyList()) }
     item { HorizontalDivider() }
     item { ArtistsSectionView(chartArtists.value ?: emptyList()) }
     item { HorizontalDivider() }
-    item {
-      TracksSectionView(
-        tracks = chartTracks.value ?: emptyList(),
-        modifier = Modifier.fillParentMaxHeight()
-      )
-    }
+    item { TracksSectionView(tracks = chartTracks.value ?: emptyList(),) }
   }
 }
