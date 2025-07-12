@@ -10,15 +10,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BottomSheetViewModel @Inject constructor() : ViewModel() {
-  private val _stack = MutableLiveData<Stack<Pair<ModalBottomSheetType, Any?>>>(Stack())
-  private val stack: LiveData<Stack<Pair<ModalBottomSheetType, Any?>>> get() = _stack
+  private val _stack = MutableLiveData<Stack<Pair<BottomSheetType, Any?>>>(Stack())
+  private val stack: LiveData<Stack<Pair<BottomSheetType, Any?>>> get() = _stack
 
-  val backStack: LiveData<List<ModalBottomSheetType>>
+  val backStack: LiveData<List<BottomSheetType>>
     get() = _stack.map { it.map { it.first }.toList() }
   val extras: LiveData<List<Any?>>
     get() = _stack.map { it.map { it.second }.toList() }
 
-  fun showBottomSheet(type: ModalBottomSheetType, extra: Any? = null) {
+  fun showBottomSheet(type: BottomSheetType, extra: Any? = null) {
     _stack.value = stack.value!!.apply { push(type to extra) }
   }
 
@@ -27,6 +27,6 @@ class BottomSheetViewModel @Inject constructor() : ViewModel() {
   }
 }
 
-enum class ModalBottomSheetType {
-  ARTIST_MODAL_BOTTOM_SHEET
+enum class BottomSheetType {
+  ARTIST_BOTTOM_SHEET
 }

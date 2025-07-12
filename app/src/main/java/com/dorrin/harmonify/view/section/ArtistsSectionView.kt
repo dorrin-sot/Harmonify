@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dorrin.harmonify.model.Artist
-import com.dorrin.harmonify.viewmodel.ModalBottomSheetType
 import com.dorrin.harmonify.viewmodel.BottomSheetViewModel
+import com.dorrin.harmonify.viewmodel.BottomSheetType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,7 +23,7 @@ internal fun ArtistsSectionView(artists: List<Artist>, modifier: Modifier = Modi
     titleGetter = { it.name },
     onClick = {
       bottomSheetViewModel.showBottomSheet(
-        ModalBottomSheetType.ARTIST_MODAL_BOTTOM_SHEET,
+        BottomSheetType.ARTIST_BOTTOM_SHEET,
         it
       )
     },

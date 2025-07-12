@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.pulltorefresh.pullToRefresh
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -27,13 +25,13 @@ fun ExploreView() {
   LazyColumn(
     modifier = Modifier.fillMaxSize()
   ) {
-    item { AlbumsSectionView(chartAlbums.value ?: emptyList()) }
+    item { AlbumsSectionView(albums = chartAlbums.value ?: emptyList()) }
     item { HorizontalDivider() }
     item { ArtistsSectionView(chartArtists.value ?: emptyList()) }
     item { HorizontalDivider() }
     item {
       TracksSectionView(
-        chartTracks.value ?: emptyList(),
+        tracks = chartTracks.value ?: emptyList(),
         modifier = Modifier.fillParentMaxHeight()
       )
     }

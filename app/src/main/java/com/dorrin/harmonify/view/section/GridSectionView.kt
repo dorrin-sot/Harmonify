@@ -1,14 +1,14 @@
 package com.dorrin.harmonify.view.section
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowColumn
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,11 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.dorrin.harmonify.model.Track
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.PlayerIconButton
+import com.dorrin.harmonify.viewmodel.PlayerViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -32,24 +34,24 @@ internal fun <T> GridSectionView(
   titleGetter: (item: T) -> String,
   trackGetter: (item: T) -> Track,
   modifier: Modifier,
+  playerViewModel: PlayerViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
 ) {
   BaseSectionView(title, modifier) {
-    LazyVerticalGrid(
-      columns = GridCells.Fixed(2),
-      modifier = Modifier.fillMaxHeight(),
-      userScrollEnabled = false
+    FlowRow(
+      maxItemsInEachRow = 2,
+      modifier = Modifier.wrapContentHeight(),
     ) {
-      items(items) {
+      items.forEach {
         ElevatedCard(
           onClick = { TODO() },
-          modifier = Modifier.padding(5.dp),
+          modifier = Modifier
+            .padding(5.dp)
+            .requiredHeight(50.dp)
+            .weight(1f),
         ) {
           Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-              .requiredHeight(50.dp)
-              .fillMaxWidth()
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
           ) {
             GlideImage(
               model = thumbnailGetter(it),
@@ -62,10 +64,10 @@ internal fun <T> GridSectionView(
               overflow = TextOverflow.Ellipsis,
               style = HarmonifyTypography.bodyMedium,
               maxLines = 1,
-              modifier = Modifier.padding(5.dp),
+              modifier = Modifier.weight(1f),
             )
 
-            PlayerIconButton(track = trackGetter(it))
+            PlayerIconButton(track = trackGetter(it), playerViewModel = playerViewModel)
           }
         }
       }
