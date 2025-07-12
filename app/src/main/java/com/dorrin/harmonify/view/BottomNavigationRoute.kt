@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavBackStackEntry
 import com.dorrin.harmonify.extension.capitalize
 import com.dorrin.harmonify.view.player.PlayerView
+import com.dorrin.harmonify.view.search.SearchIconButton
 
 enum class BottomNavigationRoute(
   val icon: ImageVector,
@@ -36,6 +37,9 @@ enum class BottomNavigationRoute(
   private val topBarActions: @Composable RowScope.() -> Unit
     get() = {
 //      TODO()
+      if (this@BottomNavigationRoute != SETTINGS) {
+        SearchIconButton()
+      }
     }
 
   @OptIn(ExperimentalMaterial3Api::class)
@@ -45,7 +49,9 @@ enum class BottomNavigationRoute(
         title = { Text(title, color = MaterialTheme.colorScheme.onPrimary) },
         actions = topBarActions,
         colors = TopAppBarDefaults.topAppBarColors(
-          containerColor = MaterialTheme.colorScheme.primary
+          containerColor = MaterialTheme.colorScheme.primary,
+          actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+          titleContentColor = MaterialTheme.colorScheme.onPrimary,
         )
       )
     }

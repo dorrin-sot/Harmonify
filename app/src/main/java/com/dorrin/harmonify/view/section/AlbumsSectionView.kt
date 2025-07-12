@@ -10,8 +10,8 @@ import com.dorrin.harmonify.viewmodel.PlayerViewModel
 
 @Composable
 internal fun AlbumsSectionView(
-  modifier: Modifier = Modifier,
   albums: List<Album>,
+  modifier: Modifier = Modifier,
   playerViewModel: PlayerViewModel = hiltViewModel(LocalActivity.current as ComponentActivity),
 ) {
   CardSectionView(
@@ -19,7 +19,7 @@ internal fun AlbumsSectionView(
     items = albums,
     thumbnailGetter = { it.coverMedium },
     titleGetter = { it.title },
-    artistGetter = { it.artist!!.name },
+    artistGetter = { it.artist?.name ?: "" },
     trackGetter = { it.tracks?.data?.firstOrNull() },
     modifier = modifier,
     playerViewModel = playerViewModel,

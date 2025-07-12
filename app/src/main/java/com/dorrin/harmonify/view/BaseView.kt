@@ -1,6 +1,6 @@
 package com.dorrin.harmonify.view
 
-//import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigationItem
@@ -11,12 +11,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.bottomsheet.ArtistBottomSheet
+import com.dorrin.harmonify.view.search.MusicSearchbar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,16 +58,25 @@ fun BaseView() {
     modifier = Modifier
       .fillMaxSize()
   ) { innerPadding ->
-    NavHost(
-      navController,
-      startDestination = BottomNavigationRoute.DefaultRoute,
-      modifier = Modifier.padding(innerPadding)
-    ) {
-      BottomNavigationRoute.entries.forEach { bnr ->
-        composable(bnr.route, content = bnr.content)
+    Box {
+      NavHost(
+        navController,
+        startDestination = BottomNavigationRoute.DefaultRoute,
+        modifier = Modifier.padding(innerPadding)
+      ) {
+        BottomNavigationRoute.entries.forEach { bnr ->
+          composable(bnr.route, content = bnr.content)
+        }
       }
+
+      MusicSearchbar(
+        modifier = Modifier
+          .align(Alignment.TopCenter)
+          .padding(innerPadding)
+      )
+
+      ArtistBottomSheet()
     }
 
-    ArtistBottomSheet()
   }
 }

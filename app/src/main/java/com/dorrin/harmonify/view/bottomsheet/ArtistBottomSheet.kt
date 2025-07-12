@@ -115,10 +115,7 @@ fun ArtistBottomSheet(
 @Preview
 @Composable
 private fun ArtistBottomSheetPreview() {
-  val exploreViewModel = ExploreViewModel(
-    HarmonifyModule.providesChartService(),
-    HarmonifyModule.providesAlbumService()
-  )
+  val exploreViewModel = ExploreViewModel(HarmonifyModule.providesChartService(),)
   val bottomSheetViewModel = BottomSheetViewModel()
   val artistViewModel = ArtistViewModel(
     HarmonifyModule.providesArtistService()
@@ -129,9 +126,9 @@ private fun ArtistBottomSheetPreview() {
     )
   )
 
-  exploreViewModel.chartArtists
+  exploreViewModel.chart
     .observeForever { it ->
-      val artist = it.first()
+      val artist = it.artists.data.firstOrNull()
       bottomSheetViewModel.showBottomSheet(BottomSheetType.ARTIST_BOTTOM_SHEET, artist)
     }
 

@@ -10,8 +10,8 @@ import com.dorrin.harmonify.viewmodel.PlayerViewModel
 
 @Composable
 fun TracksSectionView(
-  modifier: Modifier = Modifier,
   tracks: List<Track>,
+  modifier: Modifier = Modifier,
   playerViewModel: PlayerViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
 ) {
   GridSectionView(
