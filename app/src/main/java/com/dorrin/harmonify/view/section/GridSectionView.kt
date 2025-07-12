@@ -23,6 +23,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.dorrin.harmonify.model.Track
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.PlayerIconButton
+import com.dorrin.harmonify.view.PlaylistAddRemoveIconButton
 import com.dorrin.harmonify.viewmodel.PlayerViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -67,7 +68,7 @@ internal fun <T> GridSectionView(
               modifier = Modifier.weight(1f),
             )
 
-            PlayerIconButton(track = trackGetter(it), playerViewModel = playerViewModel)
+            PlaylistAddRemoveIconButton(track = trackGetter(it), playerViewModel = playerViewModel)
           }
         }
       }
