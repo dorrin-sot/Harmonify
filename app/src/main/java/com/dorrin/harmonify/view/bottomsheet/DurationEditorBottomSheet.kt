@@ -36,8 +36,12 @@ import kotlin.time.Duration.Companion.seconds
 fun DurationEditorBottomSheet(
   bottomSheetViewModel: BottomSheetViewModel = hiltViewModel(LocalActivity.current as ComponentActivity),
 ) {
-  var initialDuration: Triple<Int, Int, Int>? = null
+  var initialDuration: Triple<Int, Int, Int>
   var onSubmit: ((Duration) -> Unit)? = null
+
+  var durationHH by remember { mutableIntStateOf(0) }
+  var durationMM by remember { mutableIntStateOf(0) }
+  var durationSS by remember { mutableIntStateOf(0) }
 
   ConditionalBottomSheet(
     type = BottomSheetType.DURATION_EDITOR_BOTTOM_SHEET,
@@ -46,6 +50,11 @@ fun DurationEditorBottomSheet(
       extra ?: return@ConditionalBottomSheet
 
       initialDuration = extra.initialDuration.toComponentsHHMMSS()
+
+      durationHH = initialDuration.first
+      durationMM = initialDuration.second
+      durationSS = initialDuration.third
+
       onSubmit = extra.onSubmit
     },
     bottomSheetViewModel,
@@ -54,10 +63,6 @@ fun DurationEditorBottomSheet(
       Modifier.padding(horizontal = 20.dp, vertical = 15.dp),
       verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically)
     ) {
-      var durationHH by remember { mutableIntStateOf(initialDuration?.first ?: 0) }
-      var durationMM by remember { mutableIntStateOf(initialDuration?.second ?: 0) }
-      var durationSS by remember { mutableIntStateOf(initialDuration?.third ?: 0) }
-
       val duration by remember { derivedStateOf { durationHH.hours + durationMM.minutes + durationSS.seconds } }
 
       WheelDurationPicker(

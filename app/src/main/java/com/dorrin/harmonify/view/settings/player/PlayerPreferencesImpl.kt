@@ -9,12 +9,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
-class PlayerPreferencesImpl @Inject constructor() : PlayerPreferences {
-  @Inject
-  internal lateinit var prefManager: PreferenceManager
+class PlayerPreferencesImpl @Inject constructor(
+  internal val prefManager: PreferenceManager
+) : PlayerPreferences {
+  private var _autoSleepEnabled =
+    MutableStateFlow(prefManager.get(KEY_AUTO_SLEEP_ENABLED, DEFAULT_AUTO_SLEEP_ENABLED))
 
-  private var _autoSleepEnabled = MutableStateFlow<Boolean>(DEFAULT_AUTO_SLEEP_ENABLED)
-  private var _autoSleepDurationSec = MutableStateFlow<Long>(DEFAULT_AUTO_SLEEP_DURATION_SEC)
+  private var _autoSleepDurationSec =
+    MutableStateFlow(prefManager.get(KEY_AUTO_SLEEP_DURATION_SEC, DEFAULT_AUTO_SLEEP_DURATION_SEC))
 
   override val autoSleepEnabled: Flow<Boolean> = _autoSleepEnabled
   override val autoSleepDurationSec: Flow<Long> = _autoSleepDurationSec

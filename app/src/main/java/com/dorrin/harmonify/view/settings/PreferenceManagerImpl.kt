@@ -24,6 +24,8 @@ class PreferenceManagerImpl @Inject constructor() : PreferenceManager {
     flow?.emit(sharedPrefs.get(key, default))
   }
 
+  override fun <T> get(key: String, default: T): T = sharedPrefs.get(key, default)
+
   private fun <T> SharedPreferences.Editor.put(key: String, value: T) {
     if (value is Boolean) putBoolean(key, value)
     else if (value is Int) putInt(key, value)

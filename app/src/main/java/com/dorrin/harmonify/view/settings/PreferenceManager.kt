@@ -10,4 +10,6 @@ interface PreferenceManager {
     commit: Boolean = true,
     flow: MutableStateFlow<T>? = null
   )
+
+  fun <T> get(key: String, default: T): T
 }
