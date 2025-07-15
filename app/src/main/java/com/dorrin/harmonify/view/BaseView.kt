@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.bottomsheet.ArtistBottomSheet
+import com.dorrin.harmonify.view.bottomsheet.DurationEditorBottomSheet
 import com.dorrin.harmonify.view.search.MusicSearchbar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,7 +77,7 @@ fun BaseView() {
       )
 
       ArtistBottomSheet()
+      DurationEditorBottomSheet()
     }
-
   }
 }

@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.dorrin.harmonify.HarmonifyModule
+import com.dorrin.harmonify.di.HarmonifyModuleProviders
 import com.dorrin.harmonify.provider.MediaControllerProvider
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.PlayerIconButton
@@ -149,10 +149,10 @@ private fun duration(seconds: Number?): String =
 @Preview
 @Composable
 private fun PlayerViewPreview() {
-  val exploreViewModel = ExploreViewModel(HarmonifyModule.providesChartService(),)
+  val exploreViewModel = ExploreViewModel(HarmonifyModuleProviders.providesChartService(),)
   val playerViewModel = PlayerViewModel(
     MediaControllerProvider(
-      HarmonifyModule.providesMediaController(LocalContext.current)
+      HarmonifyModuleProviders.providesMediaController(LocalContext.current)
     )
   )
 

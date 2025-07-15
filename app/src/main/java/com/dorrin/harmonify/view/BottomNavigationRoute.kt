@@ -18,12 +18,13 @@ import androidx.navigation.NavBackStackEntry
 import com.dorrin.harmonify.extension.capitalize
 import com.dorrin.harmonify.view.player.PlayerView
 import com.dorrin.harmonify.view.search.SearchIconButton
+import com.dorrin.harmonify.view.settings.SettingsView
 
 enum class BottomNavigationRoute(
   val icon: ImageVector,
   val content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
 ) {
-  SETTINGS(icon = Icons.Default.Settings, content = { TODO() }),
+  SETTINGS(icon = Icons.Default.Settings, content = { SettingsView() }),
   EXPLORE(icon = Icons.Default.Star, content = { ExploreView() }),
   LIBRARY(icon = Icons.Default.LibraryMusic, content = { TODO() }),
   PLAYER(icon = Icons.Default.PlayArrow, content = { PlayerView() });
@@ -36,10 +37,7 @@ enum class BottomNavigationRoute(
 
   private val topBarActions: @Composable RowScope.() -> Unit
     get() = {
-//      TODO()
-      if (this@BottomNavigationRoute != SETTINGS) {
-        SearchIconButton()
-      }
+      SearchIconButton()
     }
 
   @OptIn(ExperimentalMaterial3Api::class)

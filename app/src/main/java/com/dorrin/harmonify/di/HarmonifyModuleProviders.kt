@@ -1,7 +1,8 @@
-package com.dorrin.harmonify
+package com.dorrin.harmonify.di
 
 import android.content.ComponentName
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.dorrin.harmonify.apiservice.AlbumApiService
@@ -21,7 +22,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal object HarmonifyModule {
+internal object HarmonifyModuleProviders {
   @Provides
   @Singleton
   fun providesAlbumService(): AlbumApiService = RetrofitHelper.albumApiService
@@ -55,4 +56,9 @@ internal object HarmonifyModule {
     )
     return MediaController.Builder(context, sessionToken).buildAsync()
   }
+
+  @Provides
+  @Singleton
+  fun providesSharedPreferences(@ApplicationContext context: Context): SharedPreferences =
+    context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 }
