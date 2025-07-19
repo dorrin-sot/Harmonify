@@ -20,7 +20,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -30,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.dorrin.harmonify.di.HarmonifyModuleProviders
-import com.dorrin.harmonify.provider.MediaControllerProvider
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.PlayerIconButton
 import com.dorrin.harmonify.view.RepeatIconButton
@@ -44,7 +47,7 @@ import kotlin.time.Duration.Companion.milliseconds
 fun PlayerView(
   viewModel: PlayerViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
 ) {
-  val track = viewModel.currentTrack.observeAsState()
+  val track by viewModel.currentTrack.observeAsState()
 
   Column(
     verticalArrangement = Arrangement.Center,
@@ -53,8 +56,7 @@ fun PlayerView(
       .fillMaxSize()
       .padding(20.dp)
   ) {
-    if (track.value != null) {
-      val track = track.value!!
+    track?.let { track ->
       RotatingVinylView(viewModel)
 
       Text(
@@ -112,22 +114,22 @@ fun PlayerView(
       }
 
       Row(verticalAlignment = Alignment.CenterVertically) {
-        val total = viewModel.currentTrackDurationMs.observeAsState()
-        val seek = viewModel.seek.observeAsState()
+        val total by viewModel.currentTrackDurationMs.observeAsState(0L)
+        val seek by viewModel.seek.observeAsState(0f)
 
         Text(
-          duration(seek.value?.times(total.value?.toFloat() ?: 0f)),
+          duration(seek * total),
           style = HarmonifyTypography.labelSmall
         )
         Slider(
-          value = seek.value ?: 0f,
+          value = seek,
           onValueChange = { viewModel.seekTo(it) },
           modifier = Modifier
             .padding(horizontal = 10.dp)
             .weight(1f)
         )
         Text(
-          duration(total.value),
+          duration(total),
           style = HarmonifyTypography.labelMedium
         )
       }
@@ -135,15 +137,13 @@ fun PlayerView(
   }
 }
 
-private fun duration(seconds: Number?): String =
+private fun duration(seconds: Number): String =
   seconds
-    ?.toInt()
-    ?.milliseconds
-    ?.toComponents { hours, minutes, seconds, _ ->
+    .toInt()
+    .milliseconds
+    .toComponents { hours, minutes, seconds, _ ->
       "%02d:%02d:%02d".format(hours, minutes, seconds)
-    }?.let { if (it.startsWith("00:")) it.substring(3) else it }
-    ?: ""
-
+    }.let { if (it.startsWith("00:")) it.substring(3) else it }
 
 @SuppressLint("ViewModelConstructorInComposable")
 @Preview
