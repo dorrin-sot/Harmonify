@@ -19,25 +19,23 @@ import com.dorrin.harmonify.viewmodel.PlayerViewModel
 fun RepeatIconButton(
   playerViewModel: PlayerViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
 ) {
-  val repeatMode by playerViewModel.repeatMode.observeAsState()
+  val repeatMode by playerViewModel.repeatMode.observeAsState(Player.REPEAT_MODE_OFF)
 
-  repeatMode?.let {
-    IconButton(onClick = { playerViewModel.setRepeatMode((it + 1) % 3) }) {
-      Icon(
-        when (it) {
-          Player.REPEAT_MODE_ONE -> Icons.Default.RepeatOneOn
-          Player.REPEAT_MODE_ALL -> Icons.Default.RepeatOn
-          Player.REPEAT_MODE_OFF -> Icons.Default.Repeat
-          else -> Icons.Default.Repeat
+  IconButton(onClick = { playerViewModel.setRepeatMode((repeatMode + 1) % 3) }) {
+    Icon(
+      when (repeatMode) {
+        Player.REPEAT_MODE_ONE -> Icons.Default.RepeatOneOn
+        Player.REPEAT_MODE_ALL -> Icons.Default.RepeatOn
+        Player.REPEAT_MODE_OFF -> Icons.Default.Repeat
+        else -> Icons.Default.Repeat
+      },
+      contentDescription =
+        when (repeatMode) {
+          Player.REPEAT_MODE_ONE -> "Repeat One"
+          Player.REPEAT_MODE_ALL -> "Repeat All"
+          Player.REPEAT_MODE_OFF -> "Repeat Off"
+          else -> "Repeat Off"
         },
-        contentDescription =
-          when (it) {
-            Player.REPEAT_MODE_ONE -> "Repeat One"
-            Player.REPEAT_MODE_ALL -> "Repeat All"
-            Player.REPEAT_MODE_OFF -> "Repeat Off"
-            else -> "Repeat Off"
-          },
-      )
-    }
+    )
   }
 }
