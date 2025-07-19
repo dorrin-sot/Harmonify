@@ -3,13 +3,9 @@ package com.dorrin.harmonify.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.dorrin.harmonify.apiservice.ChartApiService
-import com.dorrin.harmonify.model.Album
-import com.dorrin.harmonify.model.Artist
 import com.dorrin.harmonify.model.Result
-import com.dorrin.harmonify.model.Track
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

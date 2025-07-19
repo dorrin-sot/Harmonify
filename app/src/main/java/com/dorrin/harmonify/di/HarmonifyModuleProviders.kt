@@ -45,7 +45,6 @@ internal object HarmonifyModuleProviders {
 
 
   @Provides
-  @Singleton
   fun providesMediaController(@ApplicationContext context: Context): ListenableFuture<MediaController> {
     val sessionToken = SessionToken(
       context,

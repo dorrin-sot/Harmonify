@@ -1,28 +1,25 @@
 package com.dorrin.harmonify.provider
 
+import android.content.ComponentName
+import android.content.Context
 import androidx.media3.session.MediaController
-import com.google.common.util.concurrent.ListenableFuture
+import androidx.media3.session.SessionToken
+import com.dorrin.harmonify.service.PlayerService
 import com.google.common.util.concurrent.MoreExecutors
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-@Singleton
 class MediaControllerProvider @Inject constructor(
-  val controllerFuture: ListenableFuture<MediaController>
+  @ApplicationContext context: Context
 ) {
-  fun getController(): MediaController? =
-    if (controllerFuture.isDone) {
-      try {
-        controllerFuture.get()
-      } catch (e: Exception) {
-        null
-      }
-    } else {
-      null
-    }
+  private val controllerFuture =
+    MediaController.Builder(
+      context,
+      SessionToken(context, ComponentName(context, PlayerService::class.java))
+    ).buildAsync()
 
   suspend fun awaitController(): MediaController =
     suspendCoroutine { continuation ->

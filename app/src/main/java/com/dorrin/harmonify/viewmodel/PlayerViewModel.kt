@@ -1,8 +1,10 @@
 package com.dorrin.harmonify.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -13,6 +15,7 @@ import com.dorrin.harmonify.conversion.toTrack
 import com.dorrin.harmonify.model.Track
 import com.dorrin.harmonify.provider.MediaControllerProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -22,17 +25,20 @@ import kotlin.math.min
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
-  val mediaControllerProvider: MediaControllerProvider
+  @ApplicationContext private val context: Context
 ) : ViewModel() {
   var mediaController: MediaController? = null
 
   private lateinit var mediaListener: CustomPlayerListener
 
+  private val _playbackState = MutableLiveData<Int>()
+  val isLoading: LiveData<Boolean> get() = _playbackState.map { it == Player.STATE_BUFFERING }
+
   private val _isPlaying = MutableLiveData<Boolean>()
   val isPlaying: LiveData<Boolean> get() = _isPlaying
 
-  private val _isLoading = MutableLiveData<Boolean>()
-  val isLoading: LiveData<Boolean> get() = _isLoading
+  private val _isEnded = MutableLiveData<Boolean>()
+  val isEnded: LiveData<Boolean> get() = _isEnded
 
   private val _repeatMode = MutableLiveData<Int>()
   val repeatMode: LiveData<Int> get() = _repeatMode
@@ -61,57 +67,74 @@ class PlayerViewModel @Inject constructor(
   private var progressUpdateJob: Job? = null
 
   init {
-    initializeController()
     isPlaying.observeForever { isPlaying ->
       if (isPlaying && progressUpdateJob?.isActive != true)
         startProgressUpdates()
     }
 
-    currentIndex.observeForever { }
+    isEnded.observeForever { isEnded -> if (isEnded) disposeController() }
   }
 
   override fun onCleared() {
-    mediaController?.removeListener(mediaListener)
-    mediaController?.release()
-    progressUpdateJob?.cancel()
+    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
+    disposeController()
     super.onCleared()
   }
 
-  private fun initializeController() {
-    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController") }
+  private suspend fun initializeController() {
+    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
 
-    viewModelScope.launch {
-      mediaController = mediaControllerProvider.awaitController()
+    if (mediaController == null) {
+      val provider = MediaControllerProvider(context)
+
+      mediaController = provider.awaitController()
       mediaListener = CustomPlayerListener()
       mediaController?.addListener(mediaListener)
     }
   }
 
+  private fun disposeController() {
+    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
+
+    mediaController?.removeListener(mediaListener)
+    mediaController?.release()
+    mediaController = null
+    progressUpdateJob?.cancel()
+  }
+
   fun isInQueue(track: Track): Boolean {
-    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController") }
+    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
     return playlist.value?.contains(track) == true
   }
 
   fun pause() {
-    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController") }
+    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
     mediaController?.pause()
   }
 
   fun play() {
-    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController") }
-    mediaController?.prepare()
-    mediaController?.play()
+    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
+    viewModelScope.launch {
+      initializeController()
+      mediaController?.prepare()
+      mediaController?.play()
+    }
   }
 
   fun seekTo(percent: Float) {
-    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController") }
+    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
     val duration = currentTrackDurationMs.value ?: 0
     mediaController?.seekTo((percent * duration).toLong())
   }
 
   fun addToPlaylist(tracks: List<Track>) {
-    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController") }
-    mediaController?.addMediaItems(tracks.map { it.toMediaItem() })
+    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
+    viewModelScope.launch {
+      initializeController()
+      mediaController?.addMediaItems(tracks.map { it.toMediaItem() })
+      val isPlaying = isPlaying.value == true
+      if (!isPlaying) play()
+    }
   }
 
   fun removeFromPlaylist(tracks: List<Track>) {
@@ -124,29 +147,29 @@ class PlayerViewModel @Inject constructor(
   }
 
   fun skipPrevious() {
-    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController") }
+    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
     assert(canSkipPrevious)
     mediaController?.seekToPrevious()
   }
 
   fun skipNext() {
-    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController") }
+    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
     assert(canSkipNext)
     mediaController?.seekToNext()
   }
 
   fun setShuffleMode(shuffleMode: Boolean) {
-    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController") }
+    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
     mediaController?.shuffleModeEnabled = shuffleMode
   }
 
   fun setRepeatMode(repeatMode: Int) {
-    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController") }
+    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
     mediaController?.repeatMode = repeatMode
   }
 
   fun skipForward(seconds: Int) {
-    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name} $mediaController ${playlist.value} ${currentIndex.value} ${currentTrack.value}") }
+    object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
 
     val total = currentTrackDurationMs.value?.toFloat() ?: 0f
     val currentPos = (seek.value ?: 0f) * total
@@ -168,6 +191,12 @@ class PlayerViewModel @Inject constructor(
 
   inner class CustomPlayerListener : Player.Listener {
     override fun onEvents(player: Player, events: Player.Events) {
+      object {}.javaClass.apply {
+        println(
+          "${enclosingClass?.name}::${enclosingMethod?.name} " +
+              "${List(events.size()) { events.get(it) }}"
+        )
+      }
       if (events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED) &&
         player.playbackState == Player.STATE_READY
       ) {
@@ -175,22 +204,27 @@ class PlayerViewModel @Inject constructor(
       }
     }
 
-    override fun onPlaybackStateChanged(playbackState: Int) {
+    override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
       object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
-      _isLoading.value = (playbackState == Player.STATE_BUFFERING)
+      _playbackState.value = playbackState
+
+      _isEnded.value = playbackState == Player.STATE_ENDED ||
+          (playbackState == Player.STATE_IDLE &&
+              currentIndex.value == playlist.value?.size)
     }
 
-    override fun onIsLoadingChanged(isLoading: Boolean) {
+    override fun onPlayWhenReadyChanged(
+      playWhenReady: Boolean,
+      @Player.PlayWhenReadyChangeReason reason: Int
+    ) {
       object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
-      _isLoading.value = isLoading
+      super.onPlayWhenReadyChanged(playWhenReady, reason)
+      if (reason == Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST) {
+        _isPlaying.value = playWhenReady
+      }
     }
 
-    override fun onIsPlayingChanged(isPlaying: Boolean) {
-      object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
-      _isPlaying.value = isPlaying
-    }
-
-    override fun onRepeatModeChanged(repeatMode: Int) {
+    override fun onRepeatModeChanged(@Player.RepeatMode repeatMode: Int) {
       object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
       _repeatMode.value = repeatMode
     }
@@ -200,13 +234,19 @@ class PlayerViewModel @Inject constructor(
       _shuffleMode.value = shuffleModeEnabled
     }
 
-    override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+    override fun onTimelineChanged(
+      timeline: Timeline,
+      @Player.TimelineChangeReason reason: Int
+    ) {
       object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
       updatePlaylist(timeline)
       updateCurrentIndex()
     }
 
-    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+    override fun onMediaItemTransition(
+      mediaItem: MediaItem?,
+      @Player.MediaItemTransitionReason reason: Int
+    ) {
       object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
       updateCurrentIndex()
       updateSeekPosition()
@@ -215,7 +255,7 @@ class PlayerViewModel @Inject constructor(
     override fun onPositionDiscontinuity(
       oldPosition: Player.PositionInfo,
       newPosition: Player.PositionInfo,
-      reason: Int
+      @Player.DiscontinuityReason reason: Int
     ) {
       object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
       updateSeekPosition()

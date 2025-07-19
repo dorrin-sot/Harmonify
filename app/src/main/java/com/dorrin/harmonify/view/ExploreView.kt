@@ -6,12 +6,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.dorrin.harmonify.view.section.AlbumsSectionView
 import com.dorrin.harmonify.view.section.ArtistsSectionView
 import com.dorrin.harmonify.view.section.TracksSectionView
@@ -34,8 +38,16 @@ fun ExploreView() {
     remember { derivedStateOf { searchOn.value == true && !searchQuery.value.isNullOrEmpty() } }
 
   val results by remember { derivedStateOf { if (isSearch.value) search else chart } }
-  LaunchedEffect(Unit) {
-    exploreViewModel.getChart()
+
+  val lifecycleOwner = LocalLifecycleOwner.current
+  DisposableEffect(lifecycleOwner) {
+    val observer = LifecycleEventObserver { _, event ->
+      if (event == Lifecycle.Event.ON_START) exploreViewModel.getChart()
+    }
+
+    lifecycleOwner.lifecycle.addObserver(observer)
+
+    onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
   }
 
   LazyColumn {

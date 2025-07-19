@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dorrin.harmonify.model.Track
@@ -18,15 +19,15 @@ fun PlayerIconButton(
   track: Track? = null,
   playerViewModel: PlayerViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
 ) {
-  val isPlaying = playerViewModel.isPlaying.observeAsState()
+  val isPlaying by playerViewModel.isPlaying.observeAsState(false)
+  val isEnded by playerViewModel.isEnded.observeAsState(false)
 
-  if (isPlaying.value == true) {
+  if (isPlaying && !isEnded) {
     PlayerPauseIconButton { playerViewModel.pause() }
   } else {
     PlayerResumeIconButton {
       if (track != null && !playerViewModel.isInQueue(track))
         playerViewModel.addToPlaylist(listOf(track))
-      playerViewModel.play()
     }
   }
 }

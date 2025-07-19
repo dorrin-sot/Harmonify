@@ -38,8 +38,6 @@ fun PlaylistAddRemoveIconButton(
       playerViewModel.run {
         addToPlaylist(listOf(track))
         isInPlaylist = true
-        if (isPlaying.value != true)
-          play()
       }
     }
   } else {

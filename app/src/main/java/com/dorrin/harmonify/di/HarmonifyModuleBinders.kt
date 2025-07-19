@@ -2,6 +2,10 @@
 
 package com.dorrin.harmonify.di
 
+import com.dorrin.harmonify.permission.PermissionHandler
+import com.dorrin.harmonify.permission.PermissionHandlerImpl
+import com.dorrin.harmonify.receiver.BedTimeReceiverStarter
+import com.dorrin.harmonify.receiver.BedTimeReceiverStarterImpl
 import com.dorrin.harmonify.view.settings.PreferenceManager
 import com.dorrin.harmonify.view.settings.PreferenceManagerImpl
 import com.dorrin.harmonify.view.settings.player.PlayerPreferences
@@ -21,4 +25,10 @@ abstract class HarmonifyModuleBinders {
 
   @Binds
   abstract fun bindsPreferenceManager(impl: PreferenceManagerImpl): PreferenceManager
+
+  @Binds
+  abstract fun bindsPermissionHandler(impl: PermissionHandlerImpl): PermissionHandler
+
+  @Binds
+  abstract fun bindsBedTimeReceiverStarter(impl: BedTimeReceiverStarterImpl): BedTimeReceiverStarter
 }

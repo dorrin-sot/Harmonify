@@ -34,7 +34,6 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.dorrin.harmonify.di.HarmonifyModuleProviders
 import com.dorrin.harmonify.model.Artist
-import com.dorrin.harmonify.provider.MediaControllerProvider
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.section.AlbumsSectionView
 import com.dorrin.harmonify.view.section.TracksSectionView
@@ -115,16 +114,12 @@ fun ArtistBottomSheet(
 @Preview
 @Composable
 private fun ArtistBottomSheetPreview() {
-  val exploreViewModel = ExploreViewModel(HarmonifyModuleProviders.providesChartService(),)
+  val exploreViewModel = ExploreViewModel(HarmonifyModuleProviders.providesChartService())
   val bottomSheetViewModel = BottomSheetViewModel()
   val artistViewModel = ArtistViewModel(
     HarmonifyModuleProviders.providesArtistService()
   )
-  val playerViewModel = PlayerViewModel(
-    MediaControllerProvider(
-      HarmonifyModuleProviders.providesMediaController(LocalContext.current)
-    )
-  )
+  val playerViewModel = PlayerViewModel(LocalContext.current)
 
   exploreViewModel.chart
     .observeForever { it ->

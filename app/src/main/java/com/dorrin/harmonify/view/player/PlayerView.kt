@@ -149,18 +149,11 @@ private fun duration(seconds: Number?): String =
 @Preview
 @Composable
 private fun PlayerViewPreview() {
-  val exploreViewModel = ExploreViewModel(HarmonifyModuleProviders.providesChartService(),)
-  val playerViewModel = PlayerViewModel(
-    MediaControllerProvider(
-      HarmonifyModuleProviders.providesMediaController(LocalContext.current)
-    )
-  )
+  val exploreViewModel = ExploreViewModel(HarmonifyModuleProviders.providesChartService())
+  val playerViewModel = PlayerViewModel(LocalContext.current)
 
   exploreViewModel.chart
-    .observeForever { chart ->
-      playerViewModel.addToPlaylist(chart?.tracks?.data ?: emptyList())
-      playerViewModel.play()
-    }
+    .observeForever { playerViewModel.addToPlaylist(it.tracks.data) }
 
   PlayerView(playerViewModel)
 }

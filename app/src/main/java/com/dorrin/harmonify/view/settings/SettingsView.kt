@@ -27,9 +27,10 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun SettingsView(modifier: Modifier = Modifier) {
+  val activity = LocalActivity.current as ComponentActivity
+
   val viewModel = hiltViewModel<SettingsViewModel>()
-  val bottomSheetViewModel =
-    hiltViewModel<BottomSheetViewModel>(LocalActivity.current as ComponentActivity)
+  val bottomSheetViewModel = hiltViewModel<BottomSheetViewModel>(activity)
 
   LazyColumn(
     verticalArrangement = Arrangement.spacedBy(5.dp),
@@ -42,7 +43,9 @@ fun SettingsView(modifier: Modifier = Modifier) {
 
       SwitchItem(
         checked = enabled.value,
-        toggle = { viewModel.setAutoSleepEnabled(!enabled.value) },
+        toggle = {
+          viewModel.setAutoSleepEnabled(activity, !enabled.value)
+        },
         title = "Auto-Sleep Timer",
         subtitle = "Set an auto-sleep timer to stop music when \"Do not disturb is on\" for \"bedtime\"",
         leadingIcon = Icons.Default.Bedtime,
