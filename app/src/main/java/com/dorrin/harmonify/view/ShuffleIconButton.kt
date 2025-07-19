@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -18,18 +19,15 @@ fun ShuffleIconButton(
   modifier: Modifier = Modifier,
   playerViewModel: PlayerViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
 ) {
-  val shuffleMode = playerViewModel.shuffleMode.observeAsState()
+  val shuffleMode by playerViewModel.shuffleMode.observeAsState(false)
 
-  val value = shuffleMode.value
-  if (value != null) {
-    IconButton(
-      onClick = { playerViewModel.setShuffleMode(!value) },
-      modifier = modifier
-    ) {
-      Icon(
-        if (value) Icons.Default.ShuffleOn else Icons.Default.Shuffle,
-        contentDescription = if (value) "Shuffle On" else "Shuffle Off",
-      )
-    }
+  IconButton(
+    onClick = { playerViewModel.setShuffleMode(!shuffleMode) },
+    modifier = modifier
+  ) {
+    Icon(
+      if (shuffleMode) Icons.Default.ShuffleOn else Icons.Default.Shuffle,
+      contentDescription = if (shuffleMode) "Shuffle On" else "Shuffle Off",
+    )
   }
 }
