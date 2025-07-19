@@ -18,6 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,7 +51,7 @@ fun ArtistBottomSheet(
   bottomSheetViewModel: BottomSheetViewModel = hiltViewModel(LocalActivity.current as ComponentActivity),
   playerViewModel: PlayerViewModel = hiltViewModel(LocalActivity.current as ComponentActivity),
 ) {
-  val artist = artistViewModel.artist.observeAsState()
+  val artist by artistViewModel.artist.observeAsState()
 
   ConditionalBottomSheet(
     type = BottomSheetType.ARTIST_BOTTOM_SHEET,
@@ -67,8 +68,8 @@ fun ArtistBottomSheet(
           .height(IntrinsicSize.Min),
       ) {
         GlideImage(
-          artist.value?.pictureXl ?: artist.value?.pictureBig ?: "",
-          contentDescription = artist.value?.name,
+          artist?.pictureXl ?: artist?.pictureBig ?: "",
+          contentDescription = artist?.name,
           contentScale = ContentScale.FillWidth,
           alignment = Alignment.TopCenter,
           modifier = Modifier
@@ -77,7 +78,7 @@ fun ArtistBottomSheet(
             .aspectRatio(1.75f)
         )
         Text(
-          artist.value?.name ?: "",
+          artist?.name ?: "",
           style = HarmonifyTypography.titleLarge
             .copy(
               fontWeight = FontWeight.Bold,
@@ -93,7 +94,7 @@ fun ArtistBottomSheet(
       }
 
       AlbumsSectionView(
-        albums = artist.value?.albums ?: emptyList(),
+        albums = artist?.albums ?: emptyList(),
         playerViewModel = playerViewModel,
         modifier = Modifier.wrapContentSize()
       )
@@ -101,7 +102,7 @@ fun ArtistBottomSheet(
       HorizontalDivider()
 
       TracksSectionView(
-        tracks = artist.value?.topTracks ?: emptyList(),
+        tracks = artist?.topTracks ?: emptyList(),
         playerViewModel = playerViewModel,
         modifier = Modifier.wrapContentSize()
       )
