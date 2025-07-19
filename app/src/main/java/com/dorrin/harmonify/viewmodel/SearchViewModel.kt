@@ -20,8 +20,8 @@ class SearchViewModel @Inject constructor(
   private var _searchOn = MutableLiveData<Boolean>(false)
   val searchOn: LiveData<Boolean> get() = _searchOn
 
-  private var _query = MutableLiveData<String?>("")
-  val query: LiveData<String?> get() = _query
+  private var _query = MutableLiveData<String>("")
+  val query: LiveData<String> get() = _query
 
   private var _result = MutableLiveData<Result>()
   val result: LiveData<Result> get() = _result

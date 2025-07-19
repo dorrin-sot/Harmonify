@@ -20,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,17 +33,17 @@ import com.dorrin.harmonify.viewmodel.SearchViewModel
 fun MusicSearchbar(modifier: Modifier = Modifier) {
   val viewModel = hiltViewModel<SearchViewModel>(LocalActivity.current as ComponentActivity)
 
-  val searchOn = viewModel.searchOn.observeAsState()
-  val query = viewModel.query.observeAsState()
+  val searchOn by viewModel.searchOn.observeAsState(false)
+  val query by viewModel.query.observeAsState("")
 
   AnimatedVisibility(
-    visible = searchOn.value == true,
+    visible = searchOn,
     enter = fadeIn() + slideInVertically(),
     exit = fadeOut() + slideOutVertically(),
     modifier = modifier
   ) {
     OutlinedTextField(
-      value = query.value ?: "",
+      value = query,
       onValueChange = { viewModel.search(it) },
       maxLines = 1,
       shape = RoundedCornerShape(100),
