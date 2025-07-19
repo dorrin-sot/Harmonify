@@ -8,6 +8,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.map
@@ -22,13 +23,13 @@ internal fun ConditionalBottomSheet(
   viewModel: BottomSheetViewModel = hiltViewModel(LocalActivity.current as ComponentActivity),
   content: @Composable ColumnScope.() -> Unit,
 ) {
-  val shouldShow = viewModel.backStack.map { it.contains(type) }.observeAsState()
+  val shouldShow by viewModel.backStack.map { it.contains(type) }.observeAsState(false)
 
-  if (shouldShow.value == true) {
-    val index = viewModel.backStack.map { it.indexOf(type) }.observeAsState()
-    val extra = viewModel.extras.map { it.getOrNull(index.value!!) }.observeAsState()
+  if (shouldShow) {
+    val index by viewModel.backStack.map { it.indexOf(type) }.observeAsState(0)
+    val extra by viewModel.extras.map { it.getOrNull(index) }.observeAsState()
 
-    LaunchedEffect(extra) { onExtraGet(extra.value) }
+    LaunchedEffect(extra) { onExtraGet(extra) }
 
     val sheetState = rememberModalBottomSheetState()
 
