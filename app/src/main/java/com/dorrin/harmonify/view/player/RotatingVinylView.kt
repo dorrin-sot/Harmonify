@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,10 +33,7 @@ import com.dorrin.harmonify.viewmodel.PlayerViewModel
 fun RotatingVinylView(
   viewModel: PlayerViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
 ) {
-  val track = viewModel.currentTrack.observeAsState()
-
-  val trackTitle = track.value?.title
-  val trackCover = track.value?.album?.coverBig
+  val track by viewModel.currentTrack.observeAsState()
 
   val rotation = rememberInfiniteTransition()
     .animateFloat(
@@ -71,8 +69,8 @@ fun RotatingVinylView(
       ) {}
     }
     GlideImage(
-      trackCover,
-      contentDescription = trackTitle,
+      track?.album?.coverBig,
+      contentDescription = track?.title,
       contentScale = ContentScale.FillBounds,
       modifier = Modifier
         .requiredSize(150.dp)
