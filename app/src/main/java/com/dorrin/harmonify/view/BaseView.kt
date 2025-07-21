@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.BottomNavigationRoute.Companion.DefaultRoute
+import com.dorrin.harmonify.view.bottomsheet.AlbumBottomSheet
 import com.dorrin.harmonify.view.bottomsheet.ArtistBottomSheet
 import com.dorrin.harmonify.view.bottomsheet.DurationEditorBottomSheet
 import com.dorrin.harmonify.view.search.MusicSearchbar
@@ -69,6 +70,7 @@ fun BaseView() {
       )
 
       ArtistBottomSheet()
+      AlbumBottomSheet()
       DurationEditorBottomSheet()
     }
   }

@@ -12,7 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Lifecycle.Event.ON_START
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.dorrin.harmonify.model.emptyResult
@@ -41,7 +41,7 @@ fun ExploreView() {
   val lifecycleOwner = LocalLifecycleOwner.current
   DisposableEffect(lifecycleOwner) {
     val observer = LifecycleEventObserver { _, event ->
-      if (event == Lifecycle.Event.ON_START) exploreViewModel.getChart()
+      if (event == ON_START) exploreViewModel.getChart()
     }
 
     lifecycleOwner.lifecycle.addObserver(observer)
@@ -54,6 +54,6 @@ fun ExploreView() {
     item { HorizontalDivider() }
     item { ArtistsSectionView(artists = results.artists.data) }
     item { HorizontalDivider() }
-    item { TracksSectionView(tracks = results.tracks.data) }
+    item { TracksSectionView(tracks = results.tracks.data, maxItemsInEachRow = 2) }
   }
 }

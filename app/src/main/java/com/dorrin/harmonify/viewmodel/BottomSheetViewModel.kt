@@ -29,5 +29,6 @@ class BottomSheetViewModel @Inject constructor() : ViewModel() {
 
 enum class BottomSheetType {
   ARTIST_BOTTOM_SHEET,
+  ALBUM_BOTTOM_SHEET,
   DURATION_EDITOR_BOTTOM_SHEET,
 }

@@ -37,6 +37,7 @@ internal fun <T> CardSectionView(
   titleGetter: (item: T) -> String,
   artistGetter: (item: T) -> String,
   trackGetter: (item: T) -> Track?,
+  onClick: (item: T) -> Unit,
   modifier: Modifier,
   playerViewModel: PlayerViewModel = hiltViewModel(LocalActivity.current as ComponentActivity),
 ) {
@@ -48,7 +49,7 @@ internal fun <T> CardSectionView(
     ) {
       items.forEach {
         ElevatedCard(
-          onClick = { TODO() },
+          onClick = { onClick(it) },
           modifier = Modifier
             .padding(horizontal = 5.dp)
         ) {

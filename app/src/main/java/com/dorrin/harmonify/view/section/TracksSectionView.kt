@@ -12,6 +12,7 @@ import com.dorrin.harmonify.viewmodel.PlayerViewModel
 fun TracksSectionView(
   tracks: List<Track>,
   modifier: Modifier = Modifier,
+  maxItemsInEachRow: Int = 1,
   playerViewModel: PlayerViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
 ) {
   GridSectionView(
@@ -20,6 +21,7 @@ fun TracksSectionView(
     titleGetter = { it.title },
     thumbnailGetter = { it.album.coverMedium },
     trackGetter = { it },
+    maxItemsInEachRow = maxItemsInEachRow,
     modifier = modifier,
     playerViewModel = playerViewModel,
   )
