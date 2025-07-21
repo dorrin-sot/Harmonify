@@ -14,8 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,18 +38,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.dorrin.harmonify.di.HarmonifyModuleProviders
 import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesAlbumService
 import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesChartService
-import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesTrackService
 import com.dorrin.harmonify.model.Album
-import com.dorrin.harmonify.model.Artist
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
-import com.dorrin.harmonify.view.section.AlbumsSectionView
 import com.dorrin.harmonify.view.section.TracksSectionView
 import com.dorrin.harmonify.viewmodel.AlbumViewModel
-import com.dorrin.harmonify.viewmodel.ArtistViewModel
-import com.dorrin.harmonify.viewmodel.BottomSheetType
 import com.dorrin.harmonify.viewmodel.BottomSheetType.ALBUM_BOTTOM_SHEET
 import com.dorrin.harmonify.viewmodel.BottomSheetViewModel
 import com.dorrin.harmonify.viewmodel.ExploreViewModel
@@ -85,6 +83,18 @@ fun AlbumBottomSheet(
               .align(Alignment.TopCenter)
               .aspectRatio(1.75f)
           )
+
+          FilledIconButton(
+            onClick = {
+              album?.tracks?.data?.let {
+                playerViewModel.addToPlaylist(it)
+              }
+            },
+            modifier = Modifier.align(Alignment.BottomEnd)
+          ) {
+            @Suppress("DEPRECATION")
+            Icon(Icons.Default.PlayArrow, "Play All")
+          }
         }
         Text(
           album?.title ?: "",
@@ -131,7 +141,7 @@ private fun AlbumBottomSheetPreview() {
 
   Box { Text("Hello World") }
   AlbumBottomSheet(
-    albumViewModel ,
+    albumViewModel,
     bottomSheetViewModel,
     playerViewModel
   )
