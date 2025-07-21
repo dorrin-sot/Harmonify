@@ -1,6 +1,5 @@
 package com.dorrin.harmonify.view
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LibraryMusic
@@ -14,7 +13,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavBackStackEntry
 import com.dorrin.harmonify.extension.capitalize
 import com.dorrin.harmonify.view.player.PlayerView
 import com.dorrin.harmonify.view.search.SearchIconButton
@@ -22,7 +20,7 @@ import com.dorrin.harmonify.view.settings.SettingsView
 
 enum class BottomNavigationRoute(
   val icon: ImageVector,
-  val content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
+  val content: @Composable () -> Unit
 ) {
   SETTINGS(icon = Icons.Default.Settings, content = { SettingsView() }),
   EXPLORE(icon = Icons.Default.Star, content = { ExploreView() }),

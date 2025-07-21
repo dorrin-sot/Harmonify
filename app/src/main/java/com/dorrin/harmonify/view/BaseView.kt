@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -11,12 +12,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
+import com.dorrin.harmonify.view.BottomNavigationRoute.Companion.DefaultRoute
 import com.dorrin.harmonify.view.bottomsheet.ArtistBottomSheet
 import com.dorrin.harmonify.view.bottomsheet.DurationEditorBottomSheet
 import com.dorrin.harmonify.view.search.MusicSearchbar
@@ -24,34 +29,27 @@ import com.dorrin.harmonify.view.search.MusicSearchbar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BaseView() {
-  val navController = rememberNavController()
+  var currentRoute by rememberSaveable { mutableStateOf(DefaultRoute) }
+  val currentRouteItem by remember { derivedStateOf { BottomNavigationRoute.findByRoute(currentRoute) } }
 
   Scaffold(
-    topBar = BottomNavigationRoute.findByRoute(
-      navController.currentDestination?.route
-        ?: BottomNavigationRoute.DefaultRoute
-    ).topBar,
+    topBar = currentRouteItem.topBar,
     bottomBar = {
-      BottomAppBar(
-        containerColor = MaterialTheme.colorScheme.primary
-      ) {
-        val currentRoute = navController.currentDestination?.route
-          ?: BottomNavigationRoute.DefaultRoute
-
+      BottomAppBar(containerColor = MaterialTheme.colorScheme.primary) {
         BottomNavigationRoute.entries.forEach {
           val selected = currentRoute == it.route
           BottomNavigationItem(
             selected = selected,
-            onClick = { navController.navigate(it.route) },
+            enabled = !selected,
+            onClick = { currentRoute = it.route },
             icon = {
               Icon(
                 imageVector = it.icon,
                 contentDescription = it.title
               )
             },
-            enabled = !selected,
             label = { Text(it.title, style = HarmonifyTypography.bodySmall) },
-            selectedContentColor = MaterialTheme.colorScheme.onPrimary
+            selectedContentColor = MaterialTheme.colorScheme.onPrimary,
           )
         }
       }
@@ -60,14 +58,8 @@ fun BaseView() {
       .fillMaxSize()
   ) { innerPadding ->
     Box {
-      NavHost(
-        navController,
-        startDestination = BottomNavigationRoute.DefaultRoute,
-        modifier = Modifier.padding(innerPadding)
-      ) {
-        BottomNavigationRoute.entries.forEach { bnr ->
-          composable(bnr.route, content = bnr.content)
-        }
+      Box(modifier = Modifier.padding(innerPadding)) {
+        currentRouteItem.content()
       }
 
       MusicSearchbar(
