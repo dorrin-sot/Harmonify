@@ -4,6 +4,8 @@ package com.dorrin.harmonify.di
 
 import com.dorrin.harmonify.permission.PermissionHandler
 import com.dorrin.harmonify.permission.PermissionHandlerImpl
+import com.dorrin.harmonify.receiver.AutoSleepReceiverStarter
+import com.dorrin.harmonify.receiver.AutoSleepReceiverStarterImpl
 import com.dorrin.harmonify.receiver.BedTimeReceiverStarter
 import com.dorrin.harmonify.receiver.BedTimeReceiverStarterImpl
 import com.dorrin.harmonify.view.settings.PreferenceManager
@@ -31,4 +33,7 @@ abstract class HarmonifyModuleBinders {
 
   @Binds
   abstract fun bindsBedTimeReceiverStarter(impl: BedTimeReceiverStarterImpl): BedTimeReceiverStarter
+
+  @Binds
+  abstract fun bindsAutoSleepReceiverStarter(impl: AutoSleepReceiverStarterImpl): AutoSleepReceiverStarter
 }

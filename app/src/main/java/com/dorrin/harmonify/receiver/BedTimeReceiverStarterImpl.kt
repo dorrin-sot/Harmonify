@@ -26,8 +26,8 @@ class BedTimeReceiverStarterImpl @Inject constructor() : BedTimeReceiverStarter 
   override fun stop(context: Context) {
     object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
 
-    bedTimeReceiver?.let {
-      context.unregisterReceiver(it)
+    bedTimeReceiver?.run {
+      context.unregisterReceiver(this)
       bedTimeReceiver = null
     }
   }
