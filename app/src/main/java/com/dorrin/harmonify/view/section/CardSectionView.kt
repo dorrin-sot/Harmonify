@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
@@ -23,10 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.dorrin.harmonify.model.Track
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
-import com.dorrin.harmonify.view.PlayerIconButton
 import com.dorrin.harmonify.viewmodel.PlayerViewModel
+import java.util.Date
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -36,10 +36,8 @@ internal fun <T> CardSectionView(
   thumbnailGetter: (item: T) -> String,
   titleGetter: (item: T) -> String,
   artistGetter: (item: T) -> String,
-  trackGetter: (item: T) -> Track?,
   onClick: (item: T) -> Unit,
   modifier: Modifier,
-  playerViewModel: PlayerViewModel = hiltViewModel(LocalActivity.current as ComponentActivity),
 ) {
   BaseSectionView(title, modifier) {
     Row(
@@ -63,31 +61,23 @@ internal fun <T> CardSectionView(
               modifier = Modifier.aspectRatio(1f)
             )
 
-            Row {
-              Column(
-                verticalArrangement = Arrangement.spacedBy(5.dp),
-                modifier = Modifier.padding(7.dp),
-              ) {
-                Text(
-                  titleGetter(it),
-                  overflow = TextOverflow.Ellipsis,
-                  style = HarmonifyTypography.titleMedium,
-                  maxLines = 1,
-                )
-                Text(
-                  artistGetter(it),
-                  overflow = TextOverflow.Ellipsis,
-                  style = HarmonifyTypography.bodyMedium,
-                  maxLines = 1,
-                )
-              }
-
-              trackGetter(it)?.let { track ->
-                PlayerIconButton(track = track, playerViewModel = playerViewModel)
-              }
+            Column(
+              verticalArrangement = Arrangement.spacedBy(5.dp),
+              modifier = Modifier.padding(7.dp),
+            ) {
+              Text(
+                titleGetter(it),
+                overflow = TextOverflow.Ellipsis,
+                style = HarmonifyTypography.titleMedium,
+                maxLines = 1,
+              )
+              Text(
+                artistGetter(it),
+                overflow = TextOverflow.Ellipsis,
+                style = HarmonifyTypography.bodyMedium,
+                maxLines = 1,
+              )
             }
-
-            Spacer(Modifier.weight(1f))
           }
         }
       }

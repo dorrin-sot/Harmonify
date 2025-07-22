@@ -121,7 +121,6 @@ fun ArtistBottomSheet(
 
       AlbumsSectionView(
         albums = artist?.albums ?: emptyList(),
-        playerViewModel = playerViewModel,
         modifier = Modifier.wrapContentSize()
       )
 
