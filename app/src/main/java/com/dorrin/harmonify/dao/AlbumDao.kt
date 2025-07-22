@@ -1,5 +1,6 @@
 package com.dorrin.harmonify.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -9,7 +10,7 @@ import com.dorrin.harmonify.model.Album
 @Dao
 interface AlbumDao {
   @Query("SELECT * FROM album")
-  fun getAllLiked(): List<Album>
+  fun getAllLiked(): LiveData<List<Album>>
 
   @Query("SELECT * FROM album WHERE id = :id LIMIT 1")
   fun findLiked(id: Long): Album?

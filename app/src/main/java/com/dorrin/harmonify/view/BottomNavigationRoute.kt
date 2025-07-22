@@ -24,7 +24,7 @@ enum class BottomNavigationRoute(
 ) {
   SETTINGS(icon = Icons.Default.Settings, content = { SettingsView() }),
   EXPLORE(icon = Icons.Default.Star, content = { ExploreView() }),
-  LIBRARY(icon = Icons.Default.LibraryMusic, content = { TODO() }),
+  LIBRARY(icon = Icons.Default.LibraryMusic, content = { LibraryView() }),
   PLAYER(icon = Icons.Default.PlayArrow, content = { PlayerView() });
 
   internal val route: String
