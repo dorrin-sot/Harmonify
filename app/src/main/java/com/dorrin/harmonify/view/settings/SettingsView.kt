@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bedtime
+import androidx.compose.material.icons.filled.DownloadForOffline
 import androidx.compose.material.icons.filled.MoreTime
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ import com.dorrin.harmonify.view.bottomsheet.DurationEditorBottomSheetExtra
 import com.dorrin.harmonify.view.settings.item.StickyHeader
 import com.dorrin.harmonify.view.settings.item.SwitchItem
 import com.dorrin.harmonify.view.settings.item.ValueItem
+import com.dorrin.harmonify.view.settings.library.LibraryPreferences.Companion.DEFAULT_AUTO_DOWNLOAD_ENABLED
 import com.dorrin.harmonify.view.settings.player.PlayerPreferences.Companion.DEFAULT_AUTO_SLEEP_DURATION_SEC
 import com.dorrin.harmonify.view.settings.player.PlayerPreferences.Companion.DEFAULT_AUTO_SLEEP_ENABLED
 import com.dorrin.harmonify.viewmodel.BottomSheetType
@@ -33,7 +35,6 @@ fun SettingsView(modifier: Modifier = Modifier) {
   val viewModel = hiltViewModel<SettingsViewModel>()
   val bottomSheetViewModel = hiltViewModel<BottomSheetViewModel>(activity)
 
-  val enabled by viewModel.autoSleepEnabled.observeAsState(DEFAULT_AUTO_SLEEP_ENABLED)
   LazyColumn(
     verticalArrangement = Arrangement.spacedBy(5.dp),
     modifier = modifier,
@@ -41,6 +42,8 @@ fun SettingsView(modifier: Modifier = Modifier) {
     stickyHeader { StickyHeader("Player") }
 
     item {
+      val enabled by viewModel.autoSleepEnabled.observeAsState(DEFAULT_AUTO_SLEEP_ENABLED)
+
       SwitchItem(
         checked = enabled,
         toggle = {
@@ -53,6 +56,7 @@ fun SettingsView(modifier: Modifier = Modifier) {
     }
 
     item {
+      val enabled by viewModel.autoSleepEnabled.observeAsState(DEFAULT_AUTO_SLEEP_ENABLED)
       val duration by viewModel.autoSleepDurationSec
         .map { it.seconds }
         .observeAsState(DEFAULT_AUTO_SLEEP_DURATION_SEC.seconds)
@@ -74,6 +78,20 @@ fun SettingsView(modifier: Modifier = Modifier) {
         trailingIcon = Icons.Default.MoreTime,
         enabled = enabled,
         showValue = duration.toString() != "0s"
+      )
+    }
+
+    stickyHeader { StickyHeader("Library") }
+
+    item {
+      val enabled by viewModel.autoDownloadEnabled.observeAsState(DEFAULT_AUTO_DOWNLOAD_ENABLED)
+
+      SwitchItem(
+        checked = enabled,
+        toggle = { viewModel.setAutoDownloadEnabled(!enabled) },
+        title = "Auto-download Songs/Albums",
+        subtitle = "Automatically download library (Requires stable connection and 80% battery).\n",
+        leadingIcon = Icons.Default.DownloadForOffline,
       )
     }
 
