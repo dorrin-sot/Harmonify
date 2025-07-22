@@ -15,7 +15,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle.Event.ON_START
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.dorrin.harmonify.model.emptyResult
+import com.dorrin.harmonify.model.Result.Companion.emptyResult
 import com.dorrin.harmonify.view.section.AlbumsSectionView
 import com.dorrin.harmonify.view.section.ArtistsSectionView
 import com.dorrin.harmonify.view.section.TracksSectionView

@@ -11,12 +11,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Forward10
 import androidx.compose.material.icons.filled.Replay10
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.dorrin.harmonify.di.HarmonifyModuleProviders
+import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesChartService
+import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesTrackDao
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.PlayerIconButton
 import com.dorrin.harmonify.view.RepeatIconButton
@@ -56,30 +61,49 @@ fun PlayerView(
     track?.let { track ->
       RotatingVinylView(viewModel)
 
-      Text(
-        track.title,
-        style = HarmonifyTypography.titleLarge,
-        textAlign = TextAlign.Start,
-        modifier = Modifier
-          .fillMaxWidth()
-          .basicMarquee(
-            initialDelayMillis = 2000,
-            repeatDelayMillis = 1500
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier.padding(horizontal = 10.dp, vertical = 15.dp)
+      ) {
+        Column(
+          verticalArrangement = Arrangement.spacedBy(5.dp),
+          modifier = Modifier.weight(1f)
+        ) {
+          Text(
+            track.title,
+            style = HarmonifyTypography.titleLarge,
+            textAlign = TextAlign.Start,
+            modifier = Modifier
+              .fillMaxWidth()
+              .basicMarquee(
+                initialDelayMillis = 2000,
+                repeatDelayMillis = 1500
+              )
           )
-          .padding(top = 25.dp)
-          .padding(horizontal = 10.dp)
-      )
 
-      Text(
-        track.artist.name,
-        style = HarmonifyTypography.titleSmall,
-        textAlign = TextAlign.Start,
-        modifier = Modifier
-          .fillMaxWidth()
-          .basicMarquee()
-          .padding(bottom = 10.dp)
-          .padding(horizontal = 10.dp)
-      )
+          Text(
+            track.artist.name,
+            style = HarmonifyTypography.titleSmall,
+            textAlign = TextAlign.Start,
+            modifier = Modifier
+              .fillMaxWidth()
+              .basicMarquee()
+          )
+        }
+
+        val isLiked by viewModel.currentTrackIsLiked.observeAsState(false)
+
+        IconToggleButton(
+          checked = isLiked,
+          onCheckedChange = { viewModel.toggleLiked(track) },
+        ) {
+          Icon(
+            if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+            contentDescription = if (isLiked) "Liked" else "Unliked"
+          )
+        }
+      }
 
       Row(
         horizontalArrangement = Arrangement.Center,
@@ -115,7 +139,7 @@ fun PlayerView(
         val seek by viewModel.seek.observeAsState(0f)
 
         Text(
-          duration(seek * total),
+          duration(milliseconds = seek * total),
           style = HarmonifyTypography.labelSmall
         )
         Slider(
@@ -126,7 +150,7 @@ fun PlayerView(
             .weight(1f)
         )
         Text(
-          duration(total),
+          duration(milliseconds = total),
           style = HarmonifyTypography.labelMedium
         )
       }
@@ -134,8 +158,8 @@ fun PlayerView(
   }
 }
 
-private fun duration(seconds: Number): String =
-  seconds
+private fun duration(milliseconds: Number): String =
+  milliseconds
     .toInt()
     .milliseconds
     .toComponents { hours, minutes, seconds, _ ->
@@ -146,8 +170,9 @@ private fun duration(seconds: Number): String =
 @Preview
 @Composable
 private fun PlayerViewPreview() {
-  val exploreViewModel = ExploreViewModel(HarmonifyModuleProviders.providesChartService())
-  val playerViewModel = PlayerViewModel(LocalContext.current)
+  val exploreViewModel = ExploreViewModel(providesChartService())
+  val context = LocalContext.current
+  val playerViewModel = PlayerViewModel(context, providesTrackDao(context))
 
   exploreViewModel.chart
     .observeForever { playerViewModel.addToPlaylist(it.tracks.data) }

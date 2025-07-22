@@ -12,11 +12,14 @@ import androidx.media3.common.Timeline
 import androidx.media3.session.MediaController
 import com.dorrin.harmonify.conversion.toMediaItem
 import com.dorrin.harmonify.conversion.toTrack
+import com.dorrin.harmonify.dao.TrackDao
 import com.dorrin.harmonify.model.Track
 import com.dorrin.harmonify.provider.MediaControllerProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,7 +28,8 @@ import kotlin.math.min
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
-  @ApplicationContext private val context: Context
+  @ApplicationContext private val context: Context,
+  private val trackDao: TrackDao
 ) : ViewModel() {
   var mediaController: MediaController? = null
 
@@ -61,12 +65,17 @@ class PlayerViewModel @Inject constructor(
   private val _seek = MutableLiveData<Float>()
   val seek: LiveData<Float> get() = _seek
 
+  private val _currentTrackIsLiked = MutableLiveData<Boolean>(false)
+  val currentTrackIsLiked: LiveData<Boolean> get() = _currentTrackIsLiked
+
   val canSkipPrevious: Boolean get() = mediaController?.hasPreviousMediaItem() == true
   val canSkipNext: Boolean get() = mediaController?.hasNextMediaItem() == true
 
   private var progressUpdateJob: Job? = null
 
   init {
+    currentTrack.observeForever { updateCurrentTrackIsLiked(it) }
+
     isPlaying.observeForever { isPlaying ->
       if (isPlaying && progressUpdateJob?.isActive != true)
         startProgressUpdates()
@@ -166,6 +175,21 @@ class PlayerViewModel @Inject constructor(
   fun setRepeatMode(repeatMode: Int) {
     object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
     mediaController?.repeatMode = repeatMode
+  }
+
+  fun toggleLiked(track: Track) {
+    viewModelScope.launch(Dispatchers.IO) {
+      trackDao.toggleLiked(track)
+      updateCurrentTrackIsLiked(track)
+    }
+  }
+
+  private fun updateCurrentTrackIsLiked(track: Track) {
+    viewModelScope.launch {
+      _currentTrackIsLiked.value = viewModelScope.async(Dispatchers.IO) {
+        return@async trackDao.isLiked(track.id)
+      }.await()
+    }
   }
 
   fun skipForward(seconds: Int) {

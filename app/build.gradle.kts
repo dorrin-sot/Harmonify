@@ -3,7 +3,7 @@ plugins {
   alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.compose)
   alias(libs.plugins.hilt.android)
-  kotlin("kapt")
+  id("com.google.devtools.ksp")
   id("kotlin-parcelize")
 }
 
@@ -47,6 +47,9 @@ dependencies {
   implementation(libs.androidx.runtime.livedata)
   implementation(libs.compose)
   implementation(libs.androidx.media3.session)
+  implementation(libs.androidx.room.runtime)
+  implementation(libs.androidx.room.ktx)
+  ksp(libs.androidx.room.compiler)
   androidTestImplementation(libs.androidx.espresso.core)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.ui.test.junit4)
@@ -72,9 +75,9 @@ dependencies {
   implementation(libs.hilt.android)
   testImplementation(libs.hilt.android.testing)
   androidTestImplementation(libs.hilt.android.testing)
-  kapt(libs.hilt.compiler)
-  kaptTest(libs.hilt.compiler)
-  kaptAndroidTest(libs.hilt.compiler)
+  ksp(libs.hilt.compiler)
+  kspTest(libs.hilt.compiler)
+  kspAndroidTest(libs.hilt.compiler)
 
   implementation(libs.androidx.media3.exoplayer)
   implementation(libs.androidx.media3.exoplayer.dash)

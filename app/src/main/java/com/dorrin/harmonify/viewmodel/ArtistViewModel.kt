@@ -5,21 +5,48 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dorrin.harmonify.apiservice.ArtistApiService
+import com.dorrin.harmonify.dao.ArtistDao
+import com.dorrin.harmonify.model.Album
 import com.dorrin.harmonify.model.Artist
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ArtistViewModel @Inject constructor(
-  val artistApiService: ArtistApiService
+  val artistApiService: ArtistApiService,
+  val artistDao: ArtistDao,
 ) : ViewModel() {
   private val _artist = MutableLiveData<Artist>()
   val artist: LiveData<Artist> get() = _artist
 
+  private val _isLiked = MutableLiveData<Boolean>(false)
+  val isLiked: LiveData<Boolean> get() = _isLiked
+
   init {
+    artist.observeForever { updateIsLiked(it) }
     artist.observeForever { updateTopTracks() }
     artist.observeForever { updateAlbums() }
+  }
+
+  private fun updateIsLiked(artist: Artist) {
+    viewModelScope.launch {
+      _isLiked.value = viewModelScope.async(Dispatchers.IO) {
+        return@async artistDao.isLiked(artist.id)
+      }.await()
+    }
+  }
+
+  fun toggleLiked() {
+    val artist = artist.value
+    artist ?: return
+
+    viewModelScope.launch(Dispatchers.IO) {
+      artistDao.toggleLiked(artist)
+      updateIsLiked(artist)
+    }
   }
 
   private fun updateTopTracks() {

@@ -7,18 +7,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,8 +42,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesAlbumDao
 import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesAlbumService
 import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesChartService
+import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesTrackDao
 import com.dorrin.harmonify.model.Album
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.section.TracksSectionView
@@ -84,16 +90,34 @@ fun AlbumBottomSheet(
               .aspectRatio(1.75f)
           )
 
-          FilledIconButton(
-            onClick = {
-              album?.tracks?.data?.let {
-                playerViewModel.addToPlaylist(it)
-              }
-            },
-            modifier = Modifier.align(Alignment.BottomEnd)
+          Row(
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier
+              .align(Alignment.BottomCenter)
+              .fillMaxWidth()
+              .padding(horizontal = 10.dp)
+              .offset(y = 25.dp)
           ) {
-            @Suppress("DEPRECATION")
-            Icon(Icons.Default.PlayArrow, "Play All")
+            val isLiked by albumViewModel.isLiked.observeAsState(false)
+            FilledTonalIconToggleButton(
+              checked = isLiked,
+              onCheckedChange = { albumViewModel.toggleLiked() },
+            ) {
+              Icon(
+                if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                contentDescription = if (isLiked) "Liked" else "Unliked"
+              )
+            }
+
+            FilledIconButton(
+              onClick = {
+                album?.tracks?.data?.let {
+                  playerViewModel.addToPlaylist(it)
+                }
+              },
+            ) {
+              Icon(Icons.Default.PlayArrow, "Play All")
+            }
           }
         }
         Text(
@@ -126,10 +150,11 @@ fun AlbumBottomSheet(
 @Preview
 @Composable
 private fun AlbumBottomSheetPreview() {
+  val context = LocalContext.current
   val exploreViewModel = ExploreViewModel(providesChartService())
   val bottomSheetViewModel = BottomSheetViewModel()
-  val albumViewModel = AlbumViewModel(providesAlbumService())
-  val playerViewModel = PlayerViewModel(LocalContext.current)
+  val albumViewModel = AlbumViewModel(providesAlbumService(), providesAlbumDao(context))
+  val playerViewModel = PlayerViewModel(context, providesTrackDao(context))
 
   LaunchedEffect(Unit) { exploreViewModel.getChart() }
 

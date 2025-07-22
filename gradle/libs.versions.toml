@@ -22,8 +22,8 @@ runtimeLivedata = "1.8.3"
 hiltNavigationCompose = "1.2.0"
 compose = "1.0.0-beta01"
 media3Session = "1.7.1"
-datastorePreferences = "1.1.7"
 wheelpickercompose = "1.1.11"
+room = "2.7.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -60,6 +60,9 @@ androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navig
 compose = { group = "com.github.bumptech.glide", name = "compose", version.ref = "compose" }
 androidx-media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3Session" }
 wheelpickercompose = { module = "com.github.commandiron:WheelPickerCompose", version.ref = "wheelpickercompose" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

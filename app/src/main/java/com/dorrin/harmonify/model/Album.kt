@@ -1,20 +1,48 @@
 package com.dorrin.harmonify.model
 
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import java.util.Date
 
+@Entity
 data class Album(
-  val id: Long,
-  val title: String,
+  @PrimaryKey var id: Long,
+  var title: String,
 
-  val cover: String,
-  val coverSmall: String,
-  val coverMedium: String,
-  val coverBig: String,
-  val coverXl: String,
+  var cover: String,
+  var coverSmall: String,
+  var coverMedium: String,
+  var coverBig: String,
+  var coverXl: String,
 
-  val genres: DataList<Genre>?,
-  val label: String?,
-  val releaseDate: Date?,
-  val artist: Artist?,
-  val tracks: DataList<Track>?
-)
+  @Ignore var genres: DataList<Genre>?,
+  @Ignore var label: String?,
+  @Ignore var releaseDate: Date?,
+  @Ignore var artist: Artist?,
+  @Ignore var tracks: DataList<Track>?,
+) {
+  constructor(
+    id: Long,
+    title: String,
+    cover: String,
+    coverSmall: String,
+    coverMedium: String,
+    coverBig: String,
+    coverXl: String,
+  ) :
+      this(
+        id,
+        title,
+        cover,
+        coverSmall,
+        coverMedium,
+        coverBig,
+        coverXl,
+        null,
+        null,
+        null,
+        null,
+        null,
+      )
+}

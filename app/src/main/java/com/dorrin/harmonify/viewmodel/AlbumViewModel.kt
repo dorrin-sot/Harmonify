@@ -5,20 +5,46 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dorrin.harmonify.apiservice.AlbumApiService
+import com.dorrin.harmonify.dao.AlbumDao
 import com.dorrin.harmonify.model.Album
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AlbumViewModel @Inject constructor(
   val albumApiService: AlbumApiService,
+  private val albumDao: AlbumDao
 ) : ViewModel() {
   private val _album = MutableLiveData<Album>()
   val album: LiveData<Album> get() = _album
 
+  private val _isLiked = MutableLiveData<Boolean>(false)
+  val isLiked: LiveData<Boolean> get() = _isLiked
+
   init {
+    album.observeForever { updateIsLiked(it) }
     album.observeForever { updateTopTracks() }
+  }
+
+  private fun updateIsLiked(album: Album) {
+    viewModelScope.launch {
+      _isLiked.value = viewModelScope.async(Dispatchers.IO) {
+        return@async albumDao.isLiked(album.id)
+      }.await()
+    }
+  }
+
+  fun toggleLiked() {
+    val album = album.value
+    album ?: return
+
+    viewModelScope.launch(Dispatchers.IO) {
+      albumDao.toggleLiked(album)
+      updateIsLiked(album)
+    }
   }
 
   private fun updateTopTracks() {

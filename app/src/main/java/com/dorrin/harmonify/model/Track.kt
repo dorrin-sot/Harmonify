@@ -1,11 +1,16 @@
 package com.dorrin.harmonify.model
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
 data class Track(
-  val id: Long,
-  val title: String,
-  val duration: Int,
-  val preview: String,
-  val link: String,
-  val artist: Artist,
-  val album: Album
+  @PrimaryKey var id: Long,
+  var title: String,
+  var duration: Int,
+  var preview: String,
+  var link: String,
+  @Embedded("artist_") var artist: Artist,
+  @Embedded("album_") var album: Album
 )
