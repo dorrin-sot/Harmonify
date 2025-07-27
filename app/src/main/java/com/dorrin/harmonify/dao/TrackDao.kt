@@ -1,32 +1,27 @@
 package com.dorrin.harmonify.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.dorrin.harmonify.model.Track
+import androidx.room.Update
+import com.dorrin.harmonify.entities.TrackLike
+import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface TrackDao {
-  @Query("SELECT * FROM track")
-  fun getAllLiked(): LiveData<List<Track>>
+abstract class TrackDao : LikeableDao<TrackLike> {
+  @Query("SELECT * FROM track_likes")
+  abstract override fun getAll(): Flow<List<TrackLike>>
 
-  @Query("SELECT * FROM track WHERE id = :id LIMIT 1")
-  fun findLiked(id: Long): Track?
+  @Query("SELECT * FROM track_likes WHERE track_id = :id LIMIT 1")
+  abstract override fun find(id: Long): TrackLike?
 
   @Insert
-  fun addLiked(vararg tracks: Track)
+  abstract override fun add(track: TrackLike)
 
   @Delete
-  fun removeLiked(track: Track)
+  abstract override fun remove(track: TrackLike)
 
-  fun isLiked(id: Long): Boolean = findLiked(id) != null
-
-  fun toggleLiked(track: Track) {
-    val id = track.id
-
-    if (isLiked(id)) removeLiked(track)
-    else addLiked(track)
-  }
+  @Update
+  abstract override fun update(track: TrackLike)
 }

@@ -1,32 +1,27 @@
 package com.dorrin.harmonify.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.dorrin.harmonify.model.Album
+import androidx.room.Update
+import com.dorrin.harmonify.entities.AlbumLike
+import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface AlbumDao {
-  @Query("SELECT * FROM album")
-  fun getAllLiked(): LiveData<List<Album>>
+abstract class AlbumDao : LikeableDao<AlbumLike> {
+  @Query("SELECT * FROM album_likes")
+  abstract override fun getAll(): Flow<List<AlbumLike>>
 
-  @Query("SELECT * FROM album WHERE id = :id LIMIT 1")
-  fun findLiked(id: Long): Album?
+  @Query("SELECT * FROM album_likes WHERE album_id = :albumId LIMIT 1")
+  abstract override fun find(albumId: Long): AlbumLike?
 
   @Insert
-  fun addLiked(vararg albums: Album)
+  abstract override fun add(album: AlbumLike)
 
   @Delete
-  fun removeLiked(album: Album)
+  abstract override fun remove(album: AlbumLike)
 
-  fun isLiked(id: Long): Boolean = findLiked(id) != null
-
-  fun toggleLiked(album: Album) {
-    val id = album.id
-
-    if (isLiked(id)) removeLiked(album)
-    else addLiked(album)
-  }
+  @Update
+  abstract override fun update(album: AlbumLike)
 }

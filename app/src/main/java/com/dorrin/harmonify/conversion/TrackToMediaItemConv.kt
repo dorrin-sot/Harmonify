@@ -5,6 +5,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import com.dorrin.harmonify.model.Track
 
+@Suppress("DEPRECATION")
 fun Track.toMediaItem(): MediaItem = MediaItem.Builder()
   .setMediaId(id.toString())
   .setUri(preview)
