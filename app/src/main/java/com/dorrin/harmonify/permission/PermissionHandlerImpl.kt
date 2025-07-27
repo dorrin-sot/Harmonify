@@ -1,6 +1,7 @@
 package com.dorrin.harmonify.permission
 
-import android.content.pm.PackageManager.PERMISSION_DENIED
+import android.content.Context
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
@@ -8,6 +9,9 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import javax.inject.Inject
 
 class PermissionHandlerImpl @Inject constructor() : PermissionHandler {
+  override fun hasPermission(context: Context, permission: String): Boolean =
+    checkSelfPermission(context, permission) == PERMISSION_GRANTED
+
   override fun handlePermission(
     activity: ComponentActivity,
     permission: String,
@@ -15,7 +19,7 @@ class PermissionHandlerImpl @Inject constructor() : PermissionHandler {
     onDenied: () -> Unit,
     rationale: String?
   ) {
-    if (checkSelfPermission(activity, permission) == PERMISSION_DENIED) {
+    if (!hasPermission(activity, permission)) {
       if (shouldShowRequestPermissionRationale(activity, permission)) {
         TODO("Show rationale for this permission $rationale")
       }
