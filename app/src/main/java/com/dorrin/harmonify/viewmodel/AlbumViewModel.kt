@@ -5,8 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dorrin.harmonify.apiservice.AlbumApiService
-import com.dorrin.harmonify.dao.AlbumDao
+import com.dorrin.harmonify.entities.AlbumLike
 import com.dorrin.harmonify.model.Album
+import com.dorrin.harmonify.repository.AlbumLikeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -16,8 +17,10 @@ import javax.inject.Inject
 @HiltViewModel
 class AlbumViewModel @Inject constructor(
   val albumApiService: AlbumApiService,
-  private val albumDao: AlbumDao
 ) : ViewModel() {
+  @Inject
+  lateinit var albumLikeRepository: AlbumLikeRepository
+
   private val _album = MutableLiveData<Album>()
   val album: LiveData<Album> get() = _album
 
@@ -32,7 +35,7 @@ class AlbumViewModel @Inject constructor(
   private fun updateIsLiked(album: Album) {
     viewModelScope.launch {
       _isLiked.value = viewModelScope.async(Dispatchers.IO) {
-        return@async albumDao.isLiked(album.id)
+        return@async albumLikeRepository.isLiked(album.id)
       }.await()
     }
   }
@@ -42,7 +45,7 @@ class AlbumViewModel @Inject constructor(
     album ?: return
 
     viewModelScope.launch(Dispatchers.IO) {
-      albumDao.toggleLiked(album)
+      albumLikeRepository.toggleLiked(album.id, AlbumLike(album = album))
       updateIsLiked(album)
     }
   }

@@ -120,14 +120,14 @@ fun ArtistBottomSheet(
       }
 
       AlbumsSectionView(
-        albums = artist?.albums ?: emptyList(),
+        albums = artist?.albums?.data ?: emptyList(),
         modifier = Modifier.wrapContentSize()
       )
 
       HorizontalDivider()
 
       TracksSectionView(
-        tracks = artist?.topTracks ?: emptyList(),
+        tracks = artist?.topTracks?.data ?: emptyList(),
         playerViewModel = playerViewModel,
         modifier = Modifier.wrapContentSize()
       )
@@ -143,8 +143,8 @@ private fun ArtistBottomSheetPreview() {
   val context = LocalContext.current
   val exploreViewModel = ExploreViewModel(providesChartService())
   val bottomSheetViewModel = BottomSheetViewModel()
-  val artistViewModel = ArtistViewModel(providesArtistService(), providesArtistDao(context))
-  val playerViewModel = PlayerViewModel(context, providesTrackDao(context))
+  val artistViewModel = ArtistViewModel(providesArtistService())
+  val playerViewModel = PlayerViewModel(context)
 
   exploreViewModel.chart
     .observeForever { it ->

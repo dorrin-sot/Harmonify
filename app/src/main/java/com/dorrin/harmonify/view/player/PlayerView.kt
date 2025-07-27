@@ -172,7 +172,7 @@ private fun duration(milliseconds: Number): String =
 private fun PlayerViewPreview() {
   val exploreViewModel = ExploreViewModel(providesChartService())
   val context = LocalContext.current
-  val playerViewModel = PlayerViewModel(context, providesTrackDao(context))
+  val playerViewModel = PlayerViewModel(context)
 
   exploreViewModel.chart
     .observeForever { playerViewModel.addToPlaylist(it.tracks.data) }

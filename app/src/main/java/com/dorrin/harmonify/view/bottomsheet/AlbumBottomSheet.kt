@@ -153,8 +153,8 @@ private fun AlbumBottomSheetPreview() {
   val context = LocalContext.current
   val exploreViewModel = ExploreViewModel(providesChartService())
   val bottomSheetViewModel = BottomSheetViewModel()
-  val albumViewModel = AlbumViewModel(providesAlbumService(), providesAlbumDao(context))
-  val playerViewModel = PlayerViewModel(context, providesTrackDao(context))
+  val albumViewModel = AlbumViewModel(providesAlbumService())
+  val playerViewModel = PlayerViewModel(context)
 
   LaunchedEffect(Unit) { exploreViewModel.getChart() }
 

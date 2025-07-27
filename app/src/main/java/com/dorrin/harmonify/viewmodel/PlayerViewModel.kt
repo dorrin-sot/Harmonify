@@ -12,9 +12,10 @@ import androidx.media3.common.Timeline
 import androidx.media3.session.MediaController
 import com.dorrin.harmonify.conversion.toMediaItem
 import com.dorrin.harmonify.conversion.toTrack
-import com.dorrin.harmonify.dao.TrackDao
+import com.dorrin.harmonify.entities.TrackLike
 import com.dorrin.harmonify.model.Track
 import com.dorrin.harmonify.provider.MediaControllerProvider
+import com.dorrin.harmonify.repository.TrackLikeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -29,8 +30,10 @@ import kotlin.math.min
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
   @ApplicationContext private val context: Context,
-  private val trackDao: TrackDao
 ) : ViewModel() {
+  @Inject
+  lateinit var trackLikeRepository: TrackLikeRepository
+
   var mediaController: MediaController? = null
 
   private lateinit var mediaListener: CustomPlayerListener
@@ -179,7 +182,7 @@ class PlayerViewModel @Inject constructor(
 
   fun toggleLiked(track: Track) {
     viewModelScope.launch(Dispatchers.IO) {
-      trackDao.toggleLiked(track)
+      trackLikeRepository.toggleLiked(track.id, TrackLike(track = track))
       updateCurrentTrackIsLiked(track)
     }
   }
@@ -187,7 +190,7 @@ class PlayerViewModel @Inject constructor(
   private fun updateCurrentTrackIsLiked(track: Track) {
     viewModelScope.launch {
       _currentTrackIsLiked.value = viewModelScope.async(Dispatchers.IO) {
-        return@async trackDao.isLiked(track.id)
+        return@async trackLikeRepository.isLiked(track.id)
       }.await()
     }
   }

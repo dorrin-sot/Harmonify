@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dorrin.harmonify.apiservice.ArtistApiService
-import com.dorrin.harmonify.dao.ArtistDao
-import com.dorrin.harmonify.model.Album
+import com.dorrin.harmonify.entities.ArtistLike
 import com.dorrin.harmonify.model.Artist
+import com.dorrin.harmonify.repository.ArtistLikeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -17,8 +17,10 @@ import javax.inject.Inject
 @HiltViewModel
 class ArtistViewModel @Inject constructor(
   val artistApiService: ArtistApiService,
-  val artistDao: ArtistDao,
 ) : ViewModel() {
+  @Inject
+  lateinit var artistLikeRepository: ArtistLikeRepository
+
   private val _artist = MutableLiveData<Artist>()
   val artist: LiveData<Artist> get() = _artist
 
@@ -34,7 +36,7 @@ class ArtistViewModel @Inject constructor(
   private fun updateIsLiked(artist: Artist) {
     viewModelScope.launch {
       _isLiked.value = viewModelScope.async(Dispatchers.IO) {
-        return@async artistDao.isLiked(artist.id)
+        return@async artistLikeRepository.isLiked(artist.id)
       }.await()
     }
   }
@@ -44,7 +46,7 @@ class ArtistViewModel @Inject constructor(
     artist ?: return
 
     viewModelScope.launch(Dispatchers.IO) {
-      artistDao.toggleLiked(artist)
+      artistLikeRepository.toggleLiked(artist.id, ArtistLike(artist = artist))
       updateIsLiked(artist)
     }
   }
@@ -54,7 +56,7 @@ class ArtistViewModel @Inject constructor(
       if (topTracks != null) return@run
 
       viewModelScope.launch {
-        _artist.value = copy(topTracks = artistApiService.getArtistTopTracks(id).data)
+        _artist.value = copy(topTracks = artistApiService.getArtistTopTracks(id))
       }
     }
   }
@@ -64,7 +66,7 @@ class ArtistViewModel @Inject constructor(
       if (albums != null) return@run
 
       viewModelScope.launch {
-        _artist.value = copy(albums = artistApiService.getArtistAlbums(id).data)
+        _artist.value = copy(albums = artistApiService.getArtistAlbums(id))
       }
     }
   }
