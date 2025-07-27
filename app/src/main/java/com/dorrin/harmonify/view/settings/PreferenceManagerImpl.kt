@@ -35,6 +35,7 @@ class PreferenceManagerImpl @Inject constructor() : PreferenceManager {
     else throw IllegalArgumentException()
   }
 
+  @Suppress("UNCHECKED_CAST")
   private fun <T> SharedPreferences.get(key: String, default: T): T = (
       if (default is Boolean) getBoolean(key, default)
       else if (default is Int) getInt(key, default)

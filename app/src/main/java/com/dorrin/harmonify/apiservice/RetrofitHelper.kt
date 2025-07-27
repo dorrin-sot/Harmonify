@@ -47,4 +47,5 @@ object RetrofitHelper {
   val chartApiService: ChartApiService by lazy { retrofit.create(ChartApiService::class.java) }
   val searchApiService: SearchApiService by lazy { retrofit.create(SearchApiService::class.java) }
   val trackApiService: TrackApiService by lazy { retrofit.create(TrackApiService::class.java) }
+  val downloadApiService: DownloadApiService by lazy { retrofit.create(DownloadApiService::class.java) }
 }

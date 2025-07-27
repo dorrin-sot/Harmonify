@@ -14,6 +14,10 @@ import com.dorrin.harmonify.view.settings.library.LibraryPreferences
 import com.dorrin.harmonify.view.settings.library.LibraryPreferencesImpl
 import com.dorrin.harmonify.view.settings.player.PlayerPreferences
 import com.dorrin.harmonify.view.settings.player.PlayerPreferencesImpl
+import com.dorrin.harmonify.worker.album.AlbumDownloadWorkerManager
+import com.dorrin.harmonify.worker.album.AlbumDownloadWorkerManagerImpl
+import com.dorrin.harmonify.worker.track.TrackDownloadWorkerManager
+import com.dorrin.harmonify.worker.track.TrackDownloadWorkerManagerImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -42,4 +46,10 @@ abstract class HarmonifyModuleBinders {
 
   @Binds
   abstract fun bindsAutoSleepReceiverStarter(impl: AutoSleepReceiverStarterImpl): AutoSleepReceiverStarter
+
+  @Binds
+  abstract fun bindsAlbumDownloadWorkerManager(impl: AlbumDownloadWorkerManagerImpl): AlbumDownloadWorkerManager
+
+  @Binds
+  abstract fun bindsTrackDownloadWorkerManager(impl: TrackDownloadWorkerManagerImpl): TrackDownloadWorkerManager
 }

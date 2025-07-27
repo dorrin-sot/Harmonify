@@ -10,6 +10,7 @@ import com.dorrin.harmonify.HarmonifyDatabase
 import com.dorrin.harmonify.apiservice.AlbumApiService
 import com.dorrin.harmonify.apiservice.ArtistApiService
 import com.dorrin.harmonify.apiservice.ChartApiService
+import com.dorrin.harmonify.apiservice.DownloadApiService
 import com.dorrin.harmonify.apiservice.RetrofitHelper
 import com.dorrin.harmonify.apiservice.SearchApiService
 import com.dorrin.harmonify.apiservice.TrackApiService
@@ -42,6 +43,9 @@ internal object HarmonifyModuleProviders {
 
   @Provides
   fun providesTrackService(): TrackApiService = RetrofitHelper.trackApiService
+
+  @Provides
+  fun providesDownloadService(): DownloadApiService = RetrofitHelper.downloadApiService
 
   @Provides
   @Singleton
