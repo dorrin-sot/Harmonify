@@ -14,6 +14,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.dorrin.harmonify.extension.capitalize
+import com.dorrin.harmonify.view.downloads.DownloadsIconButton
 import com.dorrin.harmonify.view.player.PlayerView
 import com.dorrin.harmonify.view.search.SearchIconButton
 import com.dorrin.harmonify.view.settings.SettingsView
@@ -35,7 +36,11 @@ enum class BottomNavigationRoute(
 
   private val topBarActions: @Composable RowScope.() -> Unit
     get() = {
-      SearchIconButton()
+      if (route == LIBRARY.route) {
+        DownloadsIconButton()
+      } else {
+        SearchIconButton()
+      }
     }
 
   @OptIn(ExperimentalMaterial3Api::class)
