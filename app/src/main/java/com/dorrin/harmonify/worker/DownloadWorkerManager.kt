@@ -10,7 +10,7 @@ import com.dorrin.harmonify.model.Album
 import com.dorrin.harmonify.model.Track
 import com.dorrin.harmonify.worker.DownloadWorker.Companion.KEY_DOWNLOAD_URL
 import com.dorrin.harmonify.worker.DownloadWorker.Companion.KEY_OUTPUT_FILE
-import com.dorrin.harmonify.worker.DownloadWorker.Companion.KEY_SONG_NAME
+import com.dorrin.harmonify.worker.DownloadWorker.Companion.KEY_TRACK_ID
 
 interface DownloadWorkerManager<T> {
   fun schedule(item: T)
@@ -20,7 +20,7 @@ interface DownloadWorkerManager<T> {
     tag: String,
     downloadUrl: String,
     outputFile: String,
-    songName: String,
+    track: Track,
     context: Context
   ) {
     val constraints = Constraints.Builder()
@@ -36,7 +36,7 @@ interface DownloadWorkerManager<T> {
         workDataOf(
           KEY_DOWNLOAD_URL to downloadUrl,
           KEY_OUTPUT_FILE to outputFile,
-          KEY_SONG_NAME to songName,
+          KEY_TRACK_ID to track.id,
         )
       )
       .build()

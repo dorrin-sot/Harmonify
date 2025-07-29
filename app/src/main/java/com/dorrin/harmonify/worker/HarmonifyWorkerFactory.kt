@@ -7,11 +7,13 @@ import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.dorrin.harmonify.apiservice.DownloadApiService
 import com.dorrin.harmonify.permission.PermissionHandler
+import com.dorrin.harmonify.repository.TrackLikeRepository
 import javax.inject.Inject
 
 
 @HiltWorker
 class HarmonifyWorkerFactory @Inject constructor(
+  private val trackLikeRepository: TrackLikeRepository,
   private val downloadApiService: DownloadApiService,
   private val permissionHandler: PermissionHandler
 ) : WorkerFactory() {
@@ -24,6 +26,7 @@ class HarmonifyWorkerFactory @Inject constructor(
       DownloadWorker::class.java.name -> DownloadWorker(
         appContext,
         workerParameters,
+        trackLikeRepository,
         downloadApiService,
         permissionHandler
       )

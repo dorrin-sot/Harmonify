@@ -42,10 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesAlbumDao
 import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesAlbumService
 import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesChartService
-import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesTrackDao
 import com.dorrin.harmonify.model.Album
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.section.TracksSectionView

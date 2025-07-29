@@ -1,6 +1,6 @@
 package com.dorrin.harmonify.view
 
-import androidx.compose.foundation.layout.RowScope
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.PlayArrow
@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.dorrin.harmonify.extension.capitalize
 import com.dorrin.harmonify.view.downloads.DownloadsIconButton
@@ -34,28 +35,58 @@ enum class BottomNavigationRoute(
   internal val title: String
     get() = name.replace("_", " ").capitalize()
 
-  private val topBarActions: @Composable RowScope.() -> Unit
-    get() = {
-      if (route == LIBRARY.route) {
-        DownloadsIconButton()
-      } else {
-        SearchIconButton()
-      }
-    }
-
-  @OptIn(ExperimentalMaterial3Api::class)
-  val topBar: @Composable () -> Unit
-    get() = {
-      TopAppBar(
-        title = { Text(title, color = MaterialTheme.colorScheme.onPrimary) },
-        actions = topBarActions,
-        colors = TopAppBarDefaults.topAppBarColors(
-          containerColor = MaterialTheme.colorScheme.primary,
-          actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
-          titleContentColor = MaterialTheme.colorScheme.onPrimary,
+  @Composable
+  private fun TopBarActions(
+    totalTracksCount: Int,
+    downloadingTracksCount: Int,
+    totalProgress: Float,
+    onDownloadsIconButtonClicked: () -> Unit
+  ) {
+    if (route == LIBRARY.route) {
+      LaunchedEffect(totalTracksCount, downloadingTracksCount, totalProgress) {
+        Log.d(
+          "harmonify",
+          "totalTracksCount: $totalTracksCount, downloadingTracksCount: $downloadingTracksCount, totalProgress: $totalProgress"
         )
+      }
+
+      DownloadsIconButton(
+        totalTracksCount = totalTracksCount,
+        downloadingTracksCount = downloadingTracksCount,
+        totalProgress = totalProgress,
+        onClick = onDownloadsIconButtonClicked
       )
+    } else {
+      SearchIconButton()
+      Log.d("harmonify", "not library route")
+
     }
+  }
+
+  @Composable
+  @OptIn(ExperimentalMaterial3Api::class)
+  fun TopBar(
+    totalTracksCount: Int,
+    downloadingTracksCount: Int,
+    totalProgress: Float,
+    onDownloadsIconButtonClicked: () -> Unit
+  ) =
+    TopAppBar(
+      title = { Text(title, color = MaterialTheme.colorScheme.onPrimary) },
+      actions = {
+        TopBarActions(
+          totalTracksCount,
+          downloadingTracksCount,
+          totalProgress,
+          onDownloadsIconButtonClicked,
+        )
+      },
+      colors = TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+      )
+    )
 
   companion object {
     val DefaultRoute = EXPLORE.route

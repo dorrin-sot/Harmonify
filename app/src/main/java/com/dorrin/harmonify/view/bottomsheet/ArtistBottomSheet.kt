@@ -10,18 +10,12 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,10 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesArtistDao
 import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesArtistService
 import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesChartService
-import com.dorrin.harmonify.di.HarmonifyModuleProviders.providesTrackDao
 import com.dorrin.harmonify.model.Artist
 import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.section.AlbumsSectionView
@@ -76,33 +68,16 @@ fun ArtistBottomSheet(
           .wrapContentSize()
           .height(IntrinsicSize.Min),
       ) {
-        Box {
-          GlideImage(
-            artist?.pictureXl ?: artist?.pictureBig ?: "",
-            contentDescription = artist?.name,
-            contentScale = ContentScale.FillWidth,
-            alignment = Alignment.TopCenter,
-            modifier = Modifier
-              .fillMaxWidth()
-              .align(Alignment.TopCenter)
-              .aspectRatio(1.75f)
-          )
-
-          val isLiked by artistViewModel.isLiked.observeAsState(false)
-          FilledTonalIconToggleButton(
-            checked = isLiked,
-            onCheckedChange = { artistViewModel.toggleLiked() },
-            modifier = Modifier
-              .align(Alignment.BottomEnd)
-              .padding(horizontal = 10.dp)
-              .offset(y = 25.dp)
-          ) {
-            Icon(
-              if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-              contentDescription = if (isLiked) "Liked" else "Unliked"
-            )
-          }
-        }
+        GlideImage(
+          artist?.pictureXl ?: artist?.pictureBig ?: "",
+          contentDescription = artist?.name,
+          contentScale = ContentScale.FillWidth,
+          alignment = Alignment.TopCenter,
+          modifier = Modifier
+            .fillMaxWidth()
+            .align(Alignment.TopCenter)
+            .aspectRatio(1.75f)
+        )
         Text(
           artist?.name ?: "",
           style = HarmonifyTypography.titleLarge

@@ -1,10 +1,10 @@
 package com.dorrin.harmonify.view
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,17 +25,43 @@ import com.dorrin.harmonify.ui.theme.HarmonifyTypography
 import com.dorrin.harmonify.view.BottomNavigationRoute.Companion.DefaultRoute
 import com.dorrin.harmonify.view.bottomsheet.AlbumBottomSheet
 import com.dorrin.harmonify.view.bottomsheet.ArtistBottomSheet
+import com.dorrin.harmonify.view.bottomsheet.DownloadsBottomSheet
 import com.dorrin.harmonify.view.bottomsheet.DurationEditorBottomSheet
 import com.dorrin.harmonify.view.search.MusicSearchbar
+import com.dorrin.harmonify.viewmodel.BottomSheetType.DOWNLOADS_BOTTOM_SHEET
+import com.dorrin.harmonify.viewmodel.BottomSheetViewModel
+import com.dorrin.harmonify.viewmodel.DownloadsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BaseView() {
+fun BaseView(
+  bottomSheetViewModel: BottomSheetViewModel,
+  downloadsViewModel: DownloadsViewModel
+) {
+  Log.d("harmonify","BaseView")
   var currentRoute by rememberSaveable { mutableStateOf(DefaultRoute) }
   val currentRouteItem by remember { derivedStateOf { BottomNavigationRoute.findByRoute(currentRoute) } }
 
+  val totalTracksCount by downloadsViewModel.totalTracksCount.observeAsState(0)
+  val downloadingTracksCount by downloadsViewModel.downloadingTracksCount.observeAsState(0)
+  val totalProgress by downloadsViewModel.totalProgress.observeAsState(0f)
+  val onDownloadsIconButtonClicked by remember {
+    mutableStateOf({
+      bottomSheetViewModel.showBottomSheet(
+        DOWNLOADS_BOTTOM_SHEET
+      )
+    })
+  }
   Scaffold(
-    topBar = currentRouteItem.topBar,
+    topBar = {
+
+      currentRouteItem.TopBar(
+        totalTracksCount,
+        downloadingTracksCount,
+        totalProgress,
+        onDownloadsIconButtonClicked,
+      )
+    },
     bottomBar = {
       BottomAppBar(containerColor = MaterialTheme.colorScheme.primary) {
         BottomNavigationRoute.entries.forEach {
@@ -72,6 +99,7 @@ fun BaseView() {
       ArtistBottomSheet()
       AlbumBottomSheet()
       DurationEditorBottomSheet()
+      DownloadsBottomSheet()
     }
   }
 }

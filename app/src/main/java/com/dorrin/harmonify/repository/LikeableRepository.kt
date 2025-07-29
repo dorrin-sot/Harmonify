@@ -2,15 +2,15 @@ package com.dorrin.harmonify.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface LikeableRepository<T> {
-  fun getAll(): Flow<List<T>>
-  fun find(id: Long): T?
-  fun add(item: T)
-  fun remove(item: T)
-  fun update(item: T)
+abstract class LikeableRepository<T> {
+  abstract val allItems: Flow<List<T>>
+  abstract fun find(id: Long): T?
+  abstract fun add(item: T)
+  abstract fun remove(item: T)
+  abstract fun update(item: T)
 
-  fun scheduleDownload(item: T)
-  fun cleanup(item: T)
+  abstract fun scheduleDownload(item: T)
+  abstract fun cleanup(item: T)
 
   fun addWithPostOp(item: T) {
     add(item)
@@ -24,8 +24,9 @@ interface LikeableRepository<T> {
 
   fun isLiked(id: Long): Boolean = find(id) != null
 
-  fun toggleLiked(id: Long, item: T) {
-    if (isLiked(id)) removeWithPostOp(item)
+  fun toggleLiked(id: Long, item: T) = setLiked(item, !isLiked(id))
+
+  fun setLiked(item: T, value: Boolean) =
+    if (!value) removeWithPostOp(item)
     else addWithPostOp(item)
-  }
 }

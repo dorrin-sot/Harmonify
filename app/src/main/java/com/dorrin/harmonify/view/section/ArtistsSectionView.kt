@@ -19,7 +19,7 @@ internal fun ArtistsSectionView(artists: List<Artist>, modifier: Modifier = Modi
   ProfileSectionView(
     title = "Artists",
     items = artists,
-    thumbnailGetter = { it.pictureMedium },
+    thumbnailGetter = { it.pictureMedium!! },
     titleGetter = { it.name },
     onClick = { bottomSheetViewModel.showBottomSheet(ARTIST_BOTTOM_SHEET, it) },
     modifier = modifier

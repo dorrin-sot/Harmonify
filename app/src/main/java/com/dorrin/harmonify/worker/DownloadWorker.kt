@@ -11,8 +11,10 @@ import androidx.work.workDataOf
 import com.dorrin.harmonify.R
 import com.dorrin.harmonify.apiservice.DownloadApiService
 import com.dorrin.harmonify.permission.PermissionHandler
+import com.dorrin.harmonify.repository.TrackLikeRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.delay
 import java.io.File
 import java.io.FileOutputStream
 
@@ -21,15 +23,18 @@ import java.io.FileOutputStream
 class DownloadWorker @AssistedInject constructor(
   @Assisted private val context: Context,
   @Assisted private val workerParams: WorkerParameters,
+  private val trackLikeRepository: TrackLikeRepository,
   private val downloadApiService: DownloadApiService,
-  private val permissionHandler: PermissionHandler
+  private val permissionHandler: PermissionHandler,
 ) : CoroutineWorker(context, workerParams) {
   override suspend fun doWork(): Result {
     object {}.javaClass.apply { println("${enclosingClass?.name}::${enclosingMethod?.name}") }
 
     val downloadUrl = inputData.getString(KEY_DOWNLOAD_URL) ?: return Result.failure()
-    val outputPath = inputData.getString(KEY_OUTPUT_FILE) ?: return Result.failure()
-    val songName = inputData.getString(KEY_SONG_NAME) ?: return Result.failure()
+    var outputPath = inputData.getString(KEY_OUTPUT_FILE) ?: return Result.failure()
+    val trackId = inputData.getLong(KEY_TRACK_ID, -1)
+
+    val track = trackLikeRepository.find(trackId) ?: return Result.failure()
 
     val response = downloadApiService.downloadFile(downloadUrl)
 
@@ -37,8 +42,8 @@ class DownloadWorker @AssistedInject constructor(
       response.body()?.let { body ->
         val total = body.contentLength()
 
-        val pathname = "${outputPath}.${body.contentType()!!.subtype}"
-        val outputFile = File(pathname).apply {
+        outputPath = "${outputPath}.${body.contentType()!!.subtype}"
+        val outputFile = File(outputPath).apply {
           if (!exists()) {
             parentFile?.mkdirs()
             createNewFile()
@@ -54,7 +59,7 @@ class DownloadWorker @AssistedInject constructor(
         val notificationId = outputFile.hashCode()
         val notificationBuilder = NotificationCompat.Builder(applicationContext, "download_channel")
           .setSmallIcon(R.drawable.ic_download_for_offline)
-          .setContentTitle("Downloading $songName")
+          .setContentTitle("Downloading ${track.track.title}")
           .setProgress(100, 0, false)
           .setOnlyAlertOnce(true)
           .setOngoing(true)
@@ -71,14 +76,22 @@ class DownloadWorker @AssistedInject constructor(
           val progress = (100 * downloaded / total).toInt()
           setProgress(
             workDataOf(
-              "downloaded" to downloaded,
-              "total" to total,
+              "bytesDownloaded" to downloaded,
+              "totalBytes" to total,
               "progress" to progress
             )
           )
-
           notificationBuilder.setProgress(100, progress, false)
+          trackLikeRepository.update(
+            track.copy(
+              downloadPath = outputPath,
+              progress = progress / 100f,
+              bytesDownloaded = downloaded,
+              totalBytes = total,
+            )
+          )
           if (hasPermission) manager.notify(notificationId, notificationBuilder.build())
+          delay(500)
         }
 
         outputStream.flush()
@@ -100,6 +113,6 @@ class DownloadWorker @AssistedInject constructor(
   companion object {
     const val KEY_DOWNLOAD_URL = "download_url"
     const val KEY_OUTPUT_FILE = "file_name"
-    const val KEY_SONG_NAME = "song_name"
+    const val KEY_TRACK_ID = "track_id"
   }
 }

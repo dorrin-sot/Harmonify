@@ -20,7 +20,7 @@ class AlbumDownloadWorkerManagerImpl @Inject constructor(
         tag = tag(album, track),
         downloadUrl = track.preview,
         outputFile = outputFilePath(context.filesDir.absolutePath, album, track),
-        songName = track.title,
+        track = track,
         context = context
       )
     }

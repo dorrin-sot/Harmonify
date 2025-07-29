@@ -14,8 +14,6 @@ import com.dorrin.harmonify.apiservice.DownloadApiService
 import com.dorrin.harmonify.apiservice.RetrofitHelper
 import com.dorrin.harmonify.apiservice.SearchApiService
 import com.dorrin.harmonify.apiservice.TrackApiService
-import com.dorrin.harmonify.dao.AlbumDao
-import com.dorrin.harmonify.dao.ArtistDao
 import com.dorrin.harmonify.dao.TrackDao
 import com.dorrin.harmonify.service.PlayerService
 import com.google.common.util.concurrent.ListenableFuture
@@ -54,15 +52,8 @@ internal object HarmonifyModuleProviders {
       context,
       HarmonifyDatabase::class.java,
       "harmonify-db"
-    ).build()
-
-  @Provides
-  fun providesAlbumDao(@ApplicationContext context: Context): AlbumDao =
-    providesDatabase(context).albumDao()
-
-  @Provides
-  fun providesArtistDao(@ApplicationContext context: Context): ArtistDao =
-    providesDatabase(context).artistDao()
+    ).fallbackToDestructiveMigration(dropAllTables = true)
+      .build()
 
   @Provides
   fun providesTrackDao(@ApplicationContext context: Context): TrackDao =
